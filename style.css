@@ -1,59 +1,87 @@
-body {
+/* Reset & Global */
+* {
   margin: 0;
   padding: 0;
-  height: 100vh;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
   background-color: #0B0D17;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: 'Poppins', sans-serif;
   overflow: hidden;
 }
 
+/* Card Wrapper */
 .form-wrapper {
   position: relative;
-  width: 350px;
-  background: rgba(255,255,255,0.05);
+  width: 100%;
+  max-width: 400px;
+  background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(12px);
   border-radius: 20px;
-  box-shadow: 0 0 20px rgba(255,255,255,0.1);
+  padding: 30px;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
   overflow: hidden;
 }
 
+/* Form Boxes */
 .login-box {
   position: absolute;
   width: 100%;
+  top: 0;
+  left: 0;
   opacity: 0;
   transform: translateX(100%);
-  transition: all 0.6s ease-in-out;
+  transition: all 0.7s ease-in-out;
+  z-index: 1;
 }
 
+/* Active Form */
 .login-box.active {
   opacity: 1;
   transform: translateX(0);
   z-index: 2;
 }
 
-.login-box.hidden {
+/* Exit Left (Slide Out) */
+.login-box.exit-left {
+  transform: translateX(-100%);
   opacity: 0;
-  transform: translateX(100%);
   z-index: 1;
 }
 
+/* Exit Right (Slide Out) */
+.login-box.exit-right {
+  transform: translateX(100%);
+  opacity: 0;
+  z-index: 1;
+}
+
+/* Glitch Effect */
+.login-box.glitch {
+  animation: glitch 0.3s ease-in-out;
+}
+
+/* Headings */
 .login-box h2 {
   color: #C084FC;
   text-shadow: 0 0 10px #C084FC;
   text-align: center;
-  margin: 20px 0;
+  margin-bottom: 20px;
   font-size: 24px;
 }
 
+/* Input Groups */
 .input-group {
-  margin-bottom: 20px;
-  padding: 0 20px;
+  margin-bottom: 15px;
 }
 
-.input-group input, .input-group select {
+.input-group input,
+.input-group select {
   width: 100%;
   padding: 12px;
   border-radius: 10px;
@@ -61,20 +89,24 @@ body {
   background: rgba(255,255,255,0.1);
   color: #fff;
   font-size: 14px;
+  transition: all 0.3s ease;
 }
 
-.input-group input:focus, .input-group select:focus {
+.input-group input:focus,
+.input-group select:focus {
   background: rgba(255,255,255,0.15);
   box-shadow: 0 0 10px rgba(0,255,171,0.5);
+  transform: translateY(-2px);
 }
 
+/* Remember/Forgot Section */
 .remember-forgot {
   display: flex;
   justify-content: space-between;
   align-items: center;
   color: #ccc;
   font-size: 12px;
-  padding: 0 20px;
+  margin-bottom: 10px;
 }
 
 .remember-forgot a {
@@ -82,10 +114,11 @@ body {
   text-decoration: none;
 }
 
+/* Switch Form Link */
 .switch-form {
   text-align: center;
+  margin-top: 15px;
   font-size: 12px;
-  margin: 10px 0;
   color: #ccc;
 }
 
@@ -94,28 +127,33 @@ body {
   text-decoration: none;
 }
 
+/* Buttons */
 .btn {
-  width: calc(100% - 40px);
-  margin: 10px 20px;
+  width: 100%;
   padding: 12px;
-  border-radius: 10px;
   border: none;
+  border-radius: 10px;
   background: linear-gradient(90deg, #00FFF7, #00FFAB);
   color: #000;
   font-weight: bold;
   cursor: pointer;
   font-size: 14px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .btn:hover {
   animation: sparkPulse 1s infinite;
 }
 
+/* Progress Bar */
 .progress-container {
+  width: 100%;
   height: 10px;
   background: rgba(255,255,255,0.1);
   border-radius: 8px;
-  margin: 10px 20px;
+  margin-top: 15px;
   overflow: hidden;
 }
 
@@ -126,6 +164,7 @@ body {
   transition: width 1s ease-in-out;
 }
 
+/* Bubbles (Success Effect) */
 .bubbles {
   position: absolute;
   top: 0; left: 0;
@@ -147,6 +186,7 @@ body {
   animation: bubbleRise 3s linear infinite;
 }
 
+/* Animations */
 @keyframes sparkPulse {
   0% { box-shadow: 0 0 0 rgba(0,255,255,0.0); }
   50% { box-shadow: 0 0 15px rgba(0,255,255,0.5); }
