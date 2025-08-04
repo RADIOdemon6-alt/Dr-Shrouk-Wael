@@ -8,61 +8,57 @@
 </head>
 <body>
   <div class="form-wrapper">
-    <!-- Login Form -->
-    <div class="login-box active" id="loginForm">
-      <h2>تسجيل الدخول</h2>
-      <div class="input-group">
-        <input type="tel" id="loginPhone" placeholder="رقم الهاتف">
-      </div>
-      <div class="input-group">
-        <input type="password" id="loginPassword" placeholder="كلمة المرور">
-      </div>
-      <div class="remember-forgot">
-        <label><input type="checkbox" id="rememberMe"> تذكرني</label>
-        <a href="#" onclick="showForgotPassword()">نسيت كلمة المرور؟</a>
-      </div>
-      <button class="btn" onclick="login()">دخول</button>
-      <div class="progress-container">
-        <div class="progress-bar" id="progressBar"></div>
-      </div>
-      <p class="switch-form">ليس لديك حساب؟ <a href="#" onclick="showRegister()">إنشاء حساب</a></p>
+  <!-- Login Card -->
+  <div class="form-card active" id="loginCard">
+    <h2>تسجيل الدخول</h2>
+    <div class="input-group">
+      <input type="tel" placeholder="رقم الهاتف">
     </div>
-
-    <!-- Register Form -->
-    <div class="login-box hidden" id="registerForm">
-      <h2>تسجيل حساب جديد</h2>
-      <div class="input-group">
-        <input type="text" id="regName" placeholder="اسم الطالب">
-      </div>
-      <div class="input-group">
-        <input type="tel" id="regPhone" placeholder="رقم الهاتف">
-      </div>
-      <div class="input-group">
-        <input type="password" id="regPassword" placeholder="كلمة المرور">
-      </div>
-      <div class="input-group">
-        <select id="regGrade">
-          <option value="">اختر الصف</option>
-          <option value="1">أولى ثانوي</option>
-          <option value="2">ثانية ثانوي</option>
-          <option value="3">ثالثة ثانوي</option>
-        </select>
-      </div>
-      <button class="btn" onclick="register()">تسجيل</button>
-      <p class="switch-form">لديك حساب؟ <a href="#" onclick="showLogin()">دخول</a></p>
+    <div class="input-group">
+      <input type="password" placeholder="كلمة المرور">
     </div>
-
-    <!-- Forgot Password Form -->
-    <div class="login-box hidden" id="forgotForm">
-      <h2>استعادة كلمة المرور</h2>
-      <div class="input-group">
-        <input type="tel" id="forgotPhone" placeholder="رقم الهاتف">
-      </div>
-      <button class="btn" onclick="recoverPassword()">إرسال رابط الاستعادة</button>
-      <p class="switch-form"><a href="#" onclick="showLogin()">رجوع</a></p>
+    <div class="form-options">
+      <label><input type="checkbox"> تذكرني</label>
+      <a href="#" onclick="switchCard('forgotCard')">نسيت كلمة المرور؟</a>
     </div>
+    <button class="btn">دخول</button>
+    <p class="switch-form">ليس لديك حساب؟ <a href="#" onclick="switchCard('registerCard')">إنشاء حساب</a></p>
   </div>
 
+  <!-- Register Card -->
+  <div class="form-card hidden" id="registerCard">
+    <h2>تسجيل حساب جديد</h2>
+    <div class="input-group">
+      <input type="text" placeholder="اسم الطالب">
+    </div>
+    <div class="input-group">
+      <input type="tel" placeholder="رقم الهاتف">
+    </div>
+    <div class="input-group">
+      <input type="password" placeholder="كلمة المرور">
+    </div>
+    <div class="input-group">
+      <select>
+        <option>اختر الصف</option>
+        <option>أولى ثانوي</option>
+        <option>ثانية ثانوي</option>
+        <option>ثالثة ثانوي</option>
+      </select>
+    </div>
+    <button class="btn">تسجيل</button>
+    <p class="switch-form">لديك حساب؟ <a href="#" onclick="switchCard('loginCard')">دخول</a></p>
+  </div>
+
+  <!-- Forgot Password Card -->
+  <div class="form-card hidden" id="forgotCard">
+    <h2>استعادة كلمة المرور</h2>
+    <div class="input-group">
+      <input type="tel" placeholder="رقم الهاتف">
+    </div>
+    <button class="btn">إرسال رابط الاستعادة</button>
+    <p class="switch-form"><a href="#" onclick="switchCard('loginCard')">رجوع</a></p>
+  </div>
+  </div>
   <div class="bubbles" id="bubbles"></div>
 
   <script src="script.js"></script>
