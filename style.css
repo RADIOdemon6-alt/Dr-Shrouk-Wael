@@ -1,4 +1,4 @@
-/* Reset & Base */
+/* Reset & Body */
 * {
   margin: 0;
   padding: 0;
@@ -28,32 +28,14 @@ body {
   padding: 40px;
 }
 
-/* Form Cards */
+/* Form Container */
 .login-box {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  opacity: 0;
-  transform: translateX(100%);
-  transition: all 0.6s ease;
-  pointer-events: none;
+  display: none;
+  animation: fadeIn 0.5s ease-in-out;
 }
 
 .login-box.active {
-  opacity: 1;
-  transform: translateX(0);
-  pointer-events: auto;
-}
-
-.login-box.exit-left {
-  opacity: 0;
-  transform: translateX(-100%);
-}
-
-.login-box.exit-right {
-  opacity: 0;
-  transform: translateX(100%);
+  display: block;
 }
 
 .login-box h2 {
@@ -65,9 +47,10 @@ body {
   text-shadow: 0 0 10px rgba(192, 132, 252, 0.5);
 }
 
-/* Inputs */
+/* Input Fields */
 .input-group {
   margin-bottom: 20px;
+  position: relative;
 }
 
 .input-group input,
@@ -91,7 +74,7 @@ body {
   transform: translateY(-2px);
 }
 
-/* Help text */
+/* Help Text */
 .help-text {
   display: block;
   margin-top: 5px;
@@ -99,22 +82,7 @@ body {
   font-size: 12px;
 }
 
-/* Remember & Forgot */
-.remember-forgot {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 13px;
-  margin-bottom: 15px;
-  color: #ccc;
-}
-
-.remember-forgot a {
-  color: #00FFF7;
-  text-decoration: none;
-}
-
-/* Buttons */
+/* Button Style */
 .btn {
   width: 100%;
   padding: 15px;
@@ -159,24 +127,11 @@ body {
   text-decoration: underline;
 }
 
-/* Progress Bar */
-.progress-container {
-  width: 100%;
-  height: 10px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  margin-top: 15px;
-  overflow: hidden;
-}
-
-.progress-bar {
-  width: 0%;
-  height: 100%;
-  background: linear-gradient(90deg, #00FFF7, #00FFAB);
-  transition: width 1s ease-in-out;
-}
-
 /* Messages */
+.message-container {
+  padding: 0 40px 20px;
+}
+
 .message {
   padding: 15px;
   border-radius: 10px;
@@ -202,31 +157,20 @@ body {
 }
 
 /* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 @keyframes slideDown {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Accessibility Focus Handling */
-a:focus:not(:focus-visible),
-button:focus:not(:focus-visible),
-input:focus:not(:focus-visible),
-select:focus:not(:focus-visible) {
-  outline: none;
-}
-
-a:focus-visible,
-button:focus-visible,
-input:focus-visible,
-select:focus-visible {
-  outline: 2px solid #00FFF7;
-  outline-offset: 2px;
-}
-
-/* Responsive */
+/* Responsive Design */
 @media (max-width: 480px) {
   .form-wrapper {
-    padding: 30px 20px;
+    padding: 30px 25px;
   }
 
   .login-box h2 {
@@ -238,4 +182,35 @@ select:focus-visible {
     padding: 12px;
     font-size: 14px;
   }
+
+  .message-container {
+    padding: 0 25px 20px;
+  }
+}
+
+/* Focus Indicators */
+.btn:focus,
+.input-group input:focus,
+.switch-form a:focus {
+  outline: 2px solid #00FFF7;
+  outline-offset: 2px;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1a1c23;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #00FFF7;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00FFAB;
 }
