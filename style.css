@@ -12,17 +12,15 @@ body {
 
 .form-wrapper {
   position: relative;
-  width: 400px;
-  max-width: 90%;
-  height: 520px;
-  padding: 40px;
+  width: 350px;
+  height: auto;
+  padding: 30px 25px;
   background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(12px);
   border-radius: 20px;
   box-shadow: 0 0 20px rgba(255,255,255,0.1);
   overflow: hidden;
-}
-
+} 
 .login-box {
   position: absolute;
   top: 0;
@@ -64,8 +62,8 @@ body {
   color: #C084FC;
   text-shadow: 0 0 10px #C084FC;
   text-align: center;
-  margin-bottom: 25px;
-  font-size: 28px;
+  font-size: 24px;
+  margin-bottom: 20px;
 }
 
 .input-group {
@@ -75,14 +73,14 @@ body {
 .input-group input,
 .input-group select {
   width: 100%;
-  padding: 14px;
-  border-radius: 12px;
   border: none;
   background: rgba(255,255,255,0.1);
   color: #fff;
   outline: none;
-  font-size: 16px;
   transition: all 0.3s ease;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 14px;
 }
 
 .input-group input:focus,
@@ -96,9 +94,9 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 14px;
   color: #ccc;
-  margin-bottom: 15px;
+  font-size: 12px;
+  margin-bottom: 10px;
 }
 
 .remember-forgot a {
@@ -107,11 +105,11 @@ body {
 }
 
 .switch-form {
-  text-align: center;
-  margin-top: 15px;
+  font-size: 12px;
+  margin-top: 10px;
   color: #ccc;
-}
-
+} 
+  
 .switch-form a {
   color: #00FFF7;
   text-decoration: none;
@@ -119,17 +117,17 @@ body {
 
 .btn {
   width: 100%;
-  padding: 14px;
   border: none;
-  border-radius: 12px;
   background: linear-gradient(90deg, #00FFF7, #00FFAB);
   color: #000;
   font-weight: bold;
   cursor: pointer;
-  font-size: 16px;
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 14px;
 }
 
 .btn:hover {
@@ -137,14 +135,10 @@ body {
 }
 
 .progress-container {
-  width: 100%;
-  height: 15px;
-  background: rgba(255,255,255,0.1);
-  border-radius: 10px;
-  margin-top: 20px;
-  overflow: hidden;
-  position: relative;
-}
+  height: 10px;
+  margin-top: 15px;
+  border-radius: 8px;
+} 
 
 .progress-bar {
   width: 0%;
