@@ -1,70 +1,100 @@
-function swipeTo(targetFormId, direction) {
-    const activeForm = document.querySelector('.login-box.active');
-    const targetForm = document.getElementById(targetFormId);
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+  import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+  import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
-    // سحب الفورم الحالي
-    activeForm.classList.add(direction === 'left' ? 'exit-left' : 'exit-right');
+  const firebaseConfig = {
+    apiKey: "AIzaSyBSqV0VQGR3048_bhhDx7NYboe2jaYc85Y",
+    authDomain: "dr-shrouk-wael.firebaseapp.com",
+    projectId: "dr-shrouk-wael",
+    storageBucket: "dr-shrouk-wael.appspot.com",
+    messagingSenderId: "1053856451278",
+    appId: "1:1053856451278:web:877ed5b22f6a8ecaee9e9f",
+    databaseURL: "https://dr-shrouk-wael-default-rtdb.firebaseio.com/"
+  };
 
-    // بعد الانيميشن نبدل الفورم
-    setTimeout(() => {
-        activeForm.classList.remove('active', 'exit-left', 'exit-right');
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const auth = getAuth(app);
 
-        targetForm.classList.add('active', 'glitch-effect'); // تأثير الخلل الخفيف
+  // Recaptcha Invisible
+  window.recaptchaVerifier = new RecaptchaVerifier(auth, 'registerBtn', {
+    'size': 'invisible',
+    'callback': () => {
+      sendOTP();
+    }
+  });
 
-        setTimeout(() => {
-            targetForm.classList.remove('glitch-effect');
-        }, 400);
+  let confirmationResult;
 
-    }, 500); // نفس مدة transition في CSS
-}
+  // Send OTP
+  window.sendOTP = () => {
+    const phone = document.getElementById('regPhone').value;
+    const fullPhone = "+20" + phone;  // Change according to country code
 
-// أزرار التنقل بين الفورمات
-function showRegister() {
-    swipeTo('registerForm', 'left');
-}
+    signInWithPhoneNumber(auth, fullPhone, window.recaptchaVerifier)
+      .then((result) => {
+        confirmationResult = result;
+        alert("📲 تم إرسال كود التحقق إلى رقمك");
+      })
+      .catch((error) => {
+        alert("⚠️ خطأ في إرسال الكود: " + error.message);
+      });
+  };
 
-function showLogin() {
-    swipeTo('loginForm', 'right');
-}
+  // Verify OTP and Save Data
+  window.verifyAndRegister = () => {
+    const code = prompt("ادخل كود التحقق:");
+    confirmationResult.confirm(code).then((result) => {
+      const user = result.user;
+      saveUserData();
+    }).catch((error) => {
+      alert("❌ كود التحقق غير صحيح");
+    });
+  };
 
-function showForgotPassword() {
-    swipeTo('forgotForm', 'left');
-}
+  function saveUserData() {
+    const name = document.getElementById('regName').value;
+    const phone = document.getElementById('regPhone').value;
+    const password = document.getElementById('regPassword').value;
+    const grade = document.getElementById('regGrade').value;
 
-// Progress Bar + Bubbles عند تسجيل الدخول
-function login() {
-    const progressBar = document.getElementById('progressBar');
-    const bubbles = document.getElementById('bubbles');
+    if (!name || !phone || !password || !grade) {
+      alert("❌ يرجى ملء جميع الحقول");
+      return;
+    }
 
-    // Start Progress Bar
-    progressBar.style.width = '0%';
-    setTimeout(() => {
-        progressBar.style.width = '100%';
-    }, 100);
+    const userData = {
+      name: name,
+      phone: phone,
+      password: password,
+      grade: grade
+    };
 
-    // بعد ما يتملي البار → فقاعات النجاح
-    setTimeout(() => {
-        bubbles.innerHTML = '';
-        for (let i = 0; i < 15; i++) {
-            const span = document.createElement('span');
-            span.style.left = `${Math.random() * 100}%`;
-            span.style.animationDuration = `${2 + Math.random() * 2}s`;
-            bubbles.appendChild(span);
-        }
-        bubbles.style.display = 'block';
+    set(ref(db, 'users/' + name), userData)
+      .then(() => {
+        alert("✅ تم التسجيل بنجاح");
+        showLogin();
+      })
+      .catch((error) => {
+        alert("⚠️ خطأ أثناء الحفظ: " + error.message);
+      });
+  }
 
-        // إخفاء الفقاعات بعد شوية
-        setTimeout(() => {
-            bubbles.style.display = 'none';
-        }, 3000);
-    }, 1500); // بعد ما يخلص الـProgress
-}
+  // Switch Forms
+  window.showRegister = () => {
+    document.getElementById('loginForm').classList.remove('active');
+    document.getElementById('registerForm').classList.add('active');
+    document.getElementById('forgotForm').classList.remove('active');
+  };
 
-// Placeholder functions for Register & Recover
-function register() {
-    alert("🚀 تم إنشاء الحساب (دي مجرد تجربة)!");
-}
+  window.showLogin = () => {
+    document.getElementById('loginForm').classList.add('active');
+    document.getElementById('registerForm').classList.remove('active');
+    document.getElementById('forgotForm').classList.remove('active');
+  };
 
-function recoverPassword() {
-    alert("🔑 تم إرسال رابط الاستعادة (دي مجرد تجربة)!");
-}
+  window.showForgotPassword = () => {
+    document.getElementById('loginForm').classList.remove('active');
+    document.getElementById('registerForm').classList.remove('active');
+    document.getElementById('forgotForm').classList.add('active');
+  };
