@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <title>منصة الكيمياء - تسجيل الدخول</title>
-    <link rel="stylesheet" href="style.css">
-     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
   <div class="form-wrapper">
+
     <!-- نموذج تسجيل الدخول -->
     <div class="login-box active" id="loginForm">
       <h2>تسجيل الدخول</h2>
@@ -22,9 +23,6 @@
         <a href="#" onclick="showForgotPassword()">نسيت كلمة المرور؟</a>
       </div>
       <button class="btn" onclick="login()">دخول</button>
-      <div class="progress-container">
-        <div class="progress-bar" id="progressBar"></div>
-      </div>
       <p class="switch-form">ليس لديك حساب؟ <a href="#" onclick="showRegister()">إنشاء حساب</a></p>
     </div>
 
@@ -35,8 +33,23 @@
         <input type="text" id="regName" placeholder="اسم الطالب">
       </div>
       <div class="input-group">
+        <select id="regCountryCode">
+          <option value="+20">مصر (+20)</option>
+          <option value="+966">السعودية (+966)</option>
+          <option value="+971">الإمارات (+971)</option>
+        </select>
+      </div>
+      <div class="input-group">
         <input type="tel" id="regPhone" placeholder="رقم الهاتف">
       </div>
+      <div id="recaptcha-container"></div>
+      <button class="btn" onclick="sendOTP()">📲 إرسال كود التحقق</button>
+
+      <div class="input-group">
+        <input type="text" id="otpCode" placeholder="أدخل كود التحقق">
+      </div>
+      <button class="btn" onclick="verifyOTP()">✅ تأكيد الكود</button>
+
       <div class="input-group">
         <input type="password" id="regPassword" placeholder="كلمة المرور">
       </div>
@@ -61,10 +74,11 @@
       <button class="btn" onclick="recoverPassword()">إرسال رابط الاستعادة</button>
       <p class="switch-form"><a href="#" onclick="showLogin()">رجوع</a></p>
     </div>
+
   </div>
 
   <div class="bubbles" id="bubbles"></div>
 
-  <script src="script.js"></script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>
