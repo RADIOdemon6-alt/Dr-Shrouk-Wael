@@ -1,40 +1,68 @@
-function switchForm(showId) {
-  const forms = document.querySelectorAll('.login-box');
-  forms.forEach(form => {
-    if (form.id === showId) {
-      form.classList.add('active');
-      form.classList.remove('hidden');
-      form.classList.add('glitch');
-      setTimeout(() => form.classList.remove('glitch'), 300);
-    } else {
-      form.classList.remove('active');
-      form.classList.add('hidden');
-    }
-  });
+function showLogin() {
+  const loginForm = document.getElementById('loginForm');
+  const registerForm = document.getElementById('registerForm');
+  const forgotForm = document.getElementById('forgotForm');
+
+  registerForm.classList.remove('active');
+  registerForm.classList.add('exit-right');
+
+  forgotForm.classList.remove('active');
+  forgotForm.classList.add('exit-right');
+
+  setTimeout(() => {
+    registerForm.classList.remove('exit-right');
+    forgotForm.classList.remove('exit-right');
+
+    loginForm.classList.add('active');
+    loginForm.classList.remove('hidden');
+    registerForm.classList.add('hidden');
+    forgotForm.classList.add('hidden');
+  }, 300); // نفس مدة animation
 }
 
 function showRegister() {
-  switchForm('registerForm');
-}
+  const loginForm = document.getElementById('loginForm');
+  const registerForm = document.getElementById('registerForm');
+  const forgotForm = document.getElementById('forgotForm');
 
-function showLogin() {
-  switchForm('loginForm');
+  loginForm.classList.remove('active');
+  loginForm.classList.add('exit-left');
+
+  forgotForm.classList.remove('active');
+  forgotForm.classList.add('exit-left');
+
+  setTimeout(() => {
+    loginForm.classList.remove('exit-left');
+    forgotForm.classList.remove('exit-left');
+
+    registerForm.classList.add('active');
+    registerForm.classList.remove('hidden');
+    loginForm.classList.add('hidden');
+    forgotForm.classList.add('hidden');
+  }, 300);
 }
 
 function showForgotPassword() {
-  switchForm('forgotForm');
-}
+  const loginForm = document.getElementById('loginForm');
+  const registerForm = document.getElementById('registerForm');
+  const forgotForm = document.getElementById('forgotForm');
 
-function register() {
-  alert('تم التسجيل (وهمي)');
-  showLogin();
-}
+  loginForm.classList.remove('active');
+  loginForm.classList.add('exit-left');
 
-function login() {
-  const progressBar = document.getElementById('progressBar');
-  progressBar.style.width = '100%';
+  registerForm.classList.remove('active');
+  registerForm.classList.add('exit-left');
 
   setTimeout(() => {
+    loginForm.classList.remove('exit-left');
+    registerForm.classList.remove('exit-left');
+
+    forgotForm.classList.add('active');
+    forgotForm.classList.remove('hidden');
+    loginForm.classList.add('hidden');
+    registerForm.classList.add('hidden');
+  }, 300);
+}  setTimeout(() => {
     generateBubbles();
     document.getElementById('bubbles').style.display = 'block';
 
