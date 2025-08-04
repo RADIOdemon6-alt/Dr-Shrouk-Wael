@@ -1,82 +1,51 @@
 function showLogin() {
-  const loginForm = document.getElementById('loginForm');
-  const registerForm = document.getElementById('registerForm');
-  const forgotForm = document.getElementById('forgotForm');
-
-  registerForm.classList.remove('active');
-  registerForm.classList.add('exit-right');
-
-  forgotForm.classList.remove('active');
-  forgotForm.classList.add('exit-right');
-
-  setTimeout(() => {
-    registerForm.classList.remove('exit-right');
-    forgotForm.classList.remove('exit-right');
-
-    loginForm.classList.add('active');
-    loginForm.classList.remove('hidden');
-    registerForm.classList.add('hidden');
-    forgotForm.classList.add('hidden');
-  }, 300); // نفس مدة animation
+  document.getElementById('loginForm').classList.add('active');
+  document.getElementById('loginForm').classList.remove('hidden');
+  document.getElementById('registerForm').classList.remove('active');
+  document.getElementById('registerForm').classList.add('hidden');
+  document.getElementById('forgotForm').classList.remove('active');
+  document.getElementById('forgotForm').classList.add('hidden');
 }
 
 function showRegister() {
-  const loginForm = document.getElementById('loginForm');
-  const registerForm = document.getElementById('registerForm');
-  const forgotForm = document.getElementById('forgotForm');
-
-  loginForm.classList.remove('active');
-  loginForm.classList.add('exit-left');
-
-  forgotForm.classList.remove('active');
-  forgotForm.classList.add('exit-left');
-
-  setTimeout(() => {
-    loginForm.classList.remove('exit-left');
-    forgotForm.classList.remove('exit-left');
-
-    registerForm.classList.add('active');
-    registerForm.classList.remove('hidden');
-    loginForm.classList.add('hidden');
-    forgotForm.classList.add('hidden');
-  }, 300);
+  document.getElementById('registerForm').classList.add('active');
+  document.getElementById('registerForm').classList.remove('hidden');
+  document.getElementById('loginForm').classList.remove('active');
+  document.getElementById('loginForm').classList.add('hidden');
+  document.getElementById('forgotForm').classList.remove('active');
+  document.getElementById('forgotForm').classList.add('hidden');
 }
 
 function showForgotPassword() {
-  const loginForm = document.getElementById('loginForm');
-  const registerForm = document.getElementById('registerForm');
-  const forgotForm = document.getElementById('forgotForm');
+  document.getElementById('forgotForm').classList.add('active');
+  document.getElementById('forgotForm').classList.remove('hidden');
+  document.getElementById('loginForm').classList.remove('active');
+  document.getElementById('loginForm').classList.add('hidden');
+  document.getElementById('registerForm').classList.remove('active');
+  document.getElementById('registerForm').classList.add('hidden');
+}
 
-  loginForm.classList.remove('active');
-  loginForm.classList.add('exit-left');
-
-  registerForm.classList.remove('active');
-  registerForm.classList.add('exit-left');
-
+function login() {
+  // Animation progress
+  document.getElementById('progressBar').style.width = '100%';
   setTimeout(() => {
-    loginForm.classList.remove('exit-left');
-    registerForm.classList.remove('exit-left');
-
-    forgotForm.classList.add('active');
-    forgotForm.classList.remove('hidden');
-    loginForm.classList.add('hidden');
-    registerForm.classList.add('hidden');
-  }, 300);
-}  setTimeout(() => {
-    generateBubbles();
     document.getElementById('bubbles').style.display = 'block';
-
-    setTimeout(() => {
-      alert('تم تسجيل الدخول بنجاح!');
-      // بعد كده ننتقل لصفحة Dashboard
-    }, 1500);
+    // Trigger bubbles animation
+    for (let i = 0; i < 20; i++) {
+      let bubble = document.createElement('span');
+      bubble.style.left = Math.random() * 100 + '%';
+      document.getElementById('bubbles').appendChild(bubble);
+    }
   }, 1000);
 }
 
-function recoverPassword() {
-  alert('تم إرسال رابط الاستعادة (وهمي)');
+function register() {
+  alert('تم التسجيل بنجاح (Demo)');
 }
 
+function recoverPassword() {
+  alert('تم إرسال رابط الاستعادة (Demo)');
+}
 function generateBubbles() {
   const bubbles = document.getElementById('bubbles');
   bubbles.innerHTML = '';
