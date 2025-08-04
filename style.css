@@ -14,18 +14,48 @@ body {
   position: relative;
   width: 400px;
   max-width: 90%;
+  height: 520px;
   padding: 40px;
   background: rgba(255,255,255,0.05);
   backdrop-filter: blur(10px);
   border-radius: 20px;
   box-shadow: 0 0 20px rgba(255,255,255,0.1);
+  overflow: hidden;
 }
 
-.login-box {
+.form-container {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
+  opacity: 0;
+  transform: translateX(100%) scale(0.95);
+  transition: all 0.8s ease;
 }
 
-.login-box h2 {
+.form-container.active {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+  z-index: 2;
+}
+
+.form-container.exit-left {
+  transform: translateX(-100%) scale(0.95);
+  opacity: 0;
+  z-index: 1;
+}
+
+.form-container.exit-right {
+  transform: translateX(100%) scale(0.95);
+  opacity: 0;
+  z-index: 1;
+}
+
+.form-container.glitch-effect {
+  animation: glitch 0.3s ease-in-out;
+}
+
+.form-container h2 {
   color: #C084FC;
   text-shadow: 0 0 10px #C084FC;
   text-align: center;
@@ -130,8 +160,4 @@ body {
   60% { transform: translate(-1px, 1px); }
   80% { transform: translate(1px, -1px); }
   100% { transform: translate(0); }
-}
-
-.glitch {
-  animation: glitch 0.3s ease-in-out;
 }
