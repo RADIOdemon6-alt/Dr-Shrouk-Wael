@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBSqV0VQGR3048_bhhDx7NYboe2jaYc85Y",
@@ -17,6 +17,7 @@ const db = getDatabase(app);
 // تسجيل حساب جديد
 window.register = () => {
   const name = document.getElementById('regName').value.trim();
+  const countryCode = document.getElementById('regCountryCode').value;
   const phone = document.getElementById('regPhone').value.trim();
   const password = document.getElementById('regPassword').value.trim();
   const grade = document.getElementById('regGrade').value.trim();
@@ -26,14 +27,15 @@ window.register = () => {
     return;
   }
 
+  const fullPhone = countryCode + phone;
   const userData = {
     name: name,
-    phone: phone,
+    phone: fullPhone,
     password: password,
     grade: grade
   };
 
-  set(ref(db, 'users/' + grade + '/' + name), userData)
+  set(ref(db, 'users/' + name), userData)
     .then(() => {
       alert("✅ تم تسجيل الحساب بنجاح");
       showLogin();
@@ -45,10 +47,10 @@ window.register = () => {
 
 // تسجيل الدخول
 window.login = () => {
-  const phone = document.getElementById('loginPhone').value.trim();
-  const password = document.getElementById('loginPassword').value.trim();
+  const phoneInput = document.getElementById('loginPhone').value.trim();
+  const passwordInput = document.getElementById('loginPassword').value.trim();
 
-  if (!phone || !password) {
+  if (!phoneInput || !passwordInput) {
     alert("❌ أدخل رقم الهاتف وكلمة المرور");
     return;
   }
@@ -57,15 +59,13 @@ window.login = () => {
   get(dbRef).then((snapshot) => {
     let found = false;
 
-    snapshot.forEach((gradeSnap) => {
-      gradeSnap.forEach((userSnap) => {
-        const userData = userSnap.val();
-        if (userData.phone === phone && userData.password === password) {
-          found = true;
-          alert("✅ تسجيل الدخول ناجح! جاري تحويلك...");
-          window.location.href = "asset/pages/home/index.html";
-        }
-      });
+    snapshot.forEach((userSnap) => {
+      const userData = userSnap.val();
+      if (userData.phone === phoneInput && userData.password === passwordInput) {
+        found = true;
+        alert("✅ تسجيل الدخول ناجح! جاري تحويلك...");
+        window.location.href = "asset/pages/home/index.html";
+      }
     });
 
     if (!found) {
@@ -76,7 +76,7 @@ window.login = () => {
   });
 };
 
-// نسيت كلمة المرور (استرجاع بيانات)
+// استرجاع كلمة المرور
 window.recoverPassword = () => {
   const phone = document.getElementById('forgotPhone').value.trim();
   if (!phone) {
@@ -87,14 +87,12 @@ window.recoverPassword = () => {
   const dbRef = ref(db, 'users');
   get(dbRef).then((snapshot) => {
     let found = false;
-    snapshot.forEach((gradeSnap) => {
-      gradeSnap.forEach((userSnap) => {
-        const userData = userSnap.val();
-        if (userData.phone === phone) {
-          found = true;
-          alert(`🔑 كلمة المرور الخاصة بك: ${userData.password}`);
-        }
-      });
+    snapshot.forEach((userSnap) => {
+      const userData = userSnap.val();
+      if (userData.phone === phone) {
+        found = true;
+        alert(`🔑 كلمة المرور الخاصة بك: ${userData.password}`);
+      }
     });
 
     if (!found) {
