@@ -25,6 +25,101 @@ body {
     overflow: hidden;
 }
 
+/* Form Cards */
+.form-card {
+    position: absolute;
+    width: 100%;
+    transition: all 0.6s ease;
+    opacity: 0;
+    transform: translateX(100%);
+    z-index: 1;
+}
+
+.form-card.active {
+    opacity: 1;
+    transform: translateX(0);
+    z-index: 2;
+}
+
+.form-card.hidden {
+    opacity: 0;
+    transform: translateX(-100%);
+    z-index: 1;
+}
+
+.form-card h2 {
+    color: #C084FC;
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+    text-shadow: 0 0 10px #C084FC;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group input, .input-group select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+    background: rgba(255,255,255,0.15);
+    box-shadow: 0 0 10px rgba(0,255,171,0.5);
+    transform: translateY(-2px);
+}
+
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #ccc;
+    margin-bottom: 15px;
+}
+
+.form-options a, .switch-form a {
+    color: #00FFF7;
+    text-decoration: none;
+}
+
+.switch-form {
+    text-align: center;
+    font-size: 12px;
+    margin-top: 15px;
+    color: #ccc;
+}
+
+.btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #00FFF7, #00FFAB);
+    color: #000;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    animation: sparkPulse 1s infinite;
+}
+
+@keyframes sparkPulse {
+    0% { box-shadow: 0 0 0 rgba(0,255,255,0.0); }
+    50% { box-shadow: 0 0 15px rgba(0,255,255,0.5); }
+    100% { box-shadow: 0 0 0 rgba(0,255,255,0.0); }
+} 
 .form-box {
     position: absolute;
     width: 100%;
