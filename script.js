@@ -1,90 +1,70 @@
-function showLogin() {
-  const loginForm = document.getElementById('loginForm');
-  const registerForm = document.getElementById('registerForm');
-  const forgotForm = document.getElementById('forgotForm');
+function swipeTo(targetFormId, direction) {
+    const activeForm = document.querySelector('.login-box.active');
+    const targetForm = document.getElementById(targetFormId);
 
-  registerForm.classList.remove('active');
-  registerForm.classList.add('exit-right');
+    // سحب الفورم الحالي
+    activeForm.classList.add(direction === 'left' ? 'exit-left' : 'exit-right');
 
-  forgotForm.classList.remove('active');
-  forgotForm.classList.add('exit-right');
+    // بعد الانيميشن نبدل الفورم
+    setTimeout(() => {
+        activeForm.classList.remove('active', 'exit-left', 'exit-right');
 
-  setTimeout(() => {
-    registerForm.classList.remove('exit-right');
-    forgotForm.classList.remove('exit-right');
+        targetForm.classList.add('active', 'glitch-effect'); // تأثير الخلل الخفيف
 
-    loginForm.classList.add('active');
-    loginForm.classList.remove('hidden');
-    registerForm.classList.add('hidden');
-    forgotForm.classList.add('hidden');
-  }, 300); // نفس مدة animation
+        setTimeout(() => {
+            targetForm.classList.remove('glitch-effect');
+        }, 400);
+
+    }, 500); // نفس مدة transition في CSS
 }
 
+// أزرار التنقل بين الفورمات
 function showRegister() {
-  const loginForm = document.getElementById('loginForm');
-  const registerForm = document.getElementById('registerForm');
-  const forgotForm = document.getElementById('forgotForm');
+    swipeTo('registerForm', 'left');
+}
 
-  loginForm.classList.remove('active');
-  loginForm.classList.add('exit-left');
-
-  forgotForm.classList.remove('active');
-  forgotForm.classList.add('exit-left');
-
-  setTimeout(() => {
-    loginForm.classList.remove('exit-left');
-    forgotForm.classList.remove('exit-left');
-
-    registerForm.classList.add('active');
-    registerForm.classList.remove('hidden');
-    loginForm.classList.add('hidden');
-    forgotForm.classList.add('hidden');
-  }, 300);
+function showLogin() {
+    swipeTo('loginForm', 'right');
 }
 
 function showForgotPassword() {
-  const loginForm = document.getElementById('loginForm');
-  const registerForm = document.getElementById('registerForm');
-  const forgotForm = document.getElementById('forgotForm');
+    swipeTo('forgotForm', 'left');
+}
 
-  loginForm.classList.remove('active');
-  loginForm.classList.add('exit-left');
+// Progress Bar + Bubbles عند تسجيل الدخول
+function login() {
+    const progressBar = document.getElementById('progressBar');
+    const bubbles = document.getElementById('bubbles');
 
-  registerForm.classList.remove('active');
-  registerForm.classList.add('exit-left');
-
-  setTimeout(() => {
-    loginForm.classList.remove('exit-left');
-    registerForm.classList.remove('exit-left');
-
-    forgotForm.classList.add('active');
-    forgotForm.classList.remove('hidden');
-    loginForm.classList.add('hidden');
-    registerForm.classList.add('hidden');
-  }, 300);
-}  setTimeout(() => {
-    generateBubbles();
-    document.getElementById('bubbles').style.display = 'block';
-
+    // Start Progress Bar
+    progressBar.style.width = '0%';
     setTimeout(() => {
-      alert('تم تسجيل الدخول بنجاح!');
-      // بعد كده ننتقل لصفحة Dashboard
-    }, 1500);
-  }, 1000);
+        progressBar.style.width = '100%';
+    }, 100);
+
+    // بعد ما يتملي البار → فقاعات النجاح
+    setTimeout(() => {
+        bubbles.innerHTML = '';
+        for (let i = 0; i < 15; i++) {
+            const span = document.createElement('span');
+            span.style.left = `${Math.random() * 100}%`;
+            span.style.animationDuration = `${2 + Math.random() * 2}s`;
+            bubbles.appendChild(span);
+        }
+        bubbles.style.display = 'block';
+
+        // إخفاء الفقاعات بعد شوية
+        setTimeout(() => {
+            bubbles.style.display = 'none';
+        }, 3000);
+    }, 1500); // بعد ما يخلص الـProgress
+}
+
+// Placeholder functions for Register & Recover
+function register() {
+    alert("🚀 تم إنشاء الحساب (دي مجرد تجربة)!");
 }
 
 function recoverPassword() {
-  alert('تم إرسال رابط الاستعادة (وهمي)');
-}
-
-function generateBubbles() {
-  const bubbles = document.getElementById('bubbles');
-  bubbles.innerHTML = '';
-  for (let i = 0; i < 20; i++) {
-    const span = document.createElement('span');
-    span.style.left = Math.random() * 100 + '%';
-    span.style.width = span.style.height = Math.random() * 15 + 10 + 'px';
-    span.style.animationDuration = (Math.random() * 2 + 2) + 's';
-    bubbles.appendChild(span);
-  }
+    alert("🔑 تم إرسال رابط الاستعادة (دي مجرد تجربة)!");
 }
