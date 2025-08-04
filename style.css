@@ -15,7 +15,7 @@ body {
   overflow: hidden;
 }
 
-/* Card Container */
+/* Card Wrapper */
 .form-wrapper {
   position: relative;
   width: 100%;
@@ -28,7 +28,7 @@ body {
   padding: 30px 25px;
 }
 
-/* Common Form Box */
+/* Common Form Style */
 .login-box {
   position: absolute;
   top: 0;
@@ -71,7 +71,7 @@ body {
   animation: glitch 0.3s ease-in-out;
 }
 
-/* Form Title */
+/* Form Titles */
 .login-box h2 {
   color: #C084FC;
   text-shadow: 0 0 10px #C084FC;
@@ -80,7 +80,7 @@ body {
   margin-bottom: 20px;
 }
 
-/* Inputs */
+/* Input Fields */
 .input-group {
   margin-bottom: 20px;
 }
@@ -105,7 +105,7 @@ body {
   transform: translateY(-2px);
 }
 
-/* Remember Me & Forgot Password */
+/* Remember & Forgot */
 .remember-forgot {
   display: flex;
   justify-content: space-between;
@@ -133,7 +133,7 @@ body {
   text-decoration: none;
 }
 
-/* Buttons */
+/* Button Style */
 .btn {
   width: 100%;
   padding: 12px;
@@ -168,7 +168,7 @@ body {
   transition: width 1s ease-in-out;
 }
 
-/* Bubbles Effect */
+/* Bubble Effects */
 .bubbles {
   position: absolute;
   top: 0; left: 0;
