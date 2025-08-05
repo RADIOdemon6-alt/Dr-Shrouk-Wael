@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>DR-SHROUK - الكتب</title>
+  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+  <div class="top-bar">
+    <h1>DR-SHROUK</h1>
+  </div>
+
+  <div class="upload-section">
+    <input type="file" id="pdfUpload" accept="application/pdf" multiple>
+    <button id="uploadBtn">📤 رفع الكتب</button>
+  </div>
+
+  <div class="pdf-list" id="pdfList">
+    <!-- سيتم عرض ملفات PDF هنا -->
+  </div>
+
+  <button id="elementTableBtn">📊 جدول العناصر</button>
+
+  <div id="popup" class="popup hidden">
+    <div class="popup-content">
+      <img src="asset/icons/periodic-table.jpg" alt="جدول العناصر الدوري">
+      <p>جدول العناصر الدوري</p>
+      <button id="closePopup">❌ إغلاق</button>
+    </div>
+  </div>
+
+  <div class="navigation">  
+    <ul>  
+        <li class="list active">  
+            <a href="#">  
+                <span class="icon">  
+                    <ion-icon name="school-outline"></ion-icon>  
+                </span>  
+                <span class="text">الدروس</span>  
+                <span class="circle"></span>  
+            </a>  
+        </li>  
+        <li class="list">  
+            <a href="#">  
+                <span class="icon">  
+                    <ion-icon name="book-outline"></ion-icon>  
+                </span>  
+                <span class="text">الكتب</span>  
+                <span class="circle"></span>  
+            </a>  
+        </li>  
+        <li class="list">  
+            <a href="#">  
+                <span class="icon">  
+                    <ion-icon name="clipboard-outline"></ion-icon>  
+                </span>  
+                <span class="text">الاختبارات</span>  
+                <span class="circle"></span>  
+            </a>  
+        </li>  
+        <li class="list">  
+            <a href="#">  
+                <span class="icon">  
+                    <ion-icon name="person-outline"></ion-icon>  
+                </span>  
+                <span class="text">البروفايل</span>  
+                <span class="circle"></span>  
+            </a>  
+        </li>  
+        <li class="list">
+  <a href="#">
+    <span class="icon">
+      <ion-icon name="videocam-outline"></ion-icon>
+    </span>
+    <span class="text">فيديوهاتي</span>
+    <span class="circle"></span>
+  </a>
+</li>
+        <div class="indicator"></div>  
+    </ul>  
+</div>  
+
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>  
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+  <script type="module" src="script.js"></script>
+</body>
+              </html>
