@@ -7,6 +7,13 @@ import {
   serverTimestamp
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword
+} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+// إعداد Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBSqV0VQGR3048_bhhDx7NYboe2jaYc85Y",
   authDomain: "dr-shrouk-wael.firebaseapp.com",
@@ -19,83 +26,111 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
-// تسجيل حساب جديد
+// 🔐 تحويل رقم الهاتف إلى بريد وهمي
+function phoneToEmail(phone) {
+  return phone.replace(/[^+\d]/g, '') + "@chemapp.com";
+}
+
+// ✅ تسجيل حساب جديد
 window.register = async function () {
   const name = document.getElementById("regName")?.value.trim();
-  const phoneCode = document.getElementById("regCountryCode")?.value || "+20";
-  const phone = phoneCode + document.getElementById("regPhone")?.value.trim();
+  let phone = document.getElementById("regPhone")?.value.trim();
   const password = document.getElementById("regPassword")?.value.trim();
-  const grade = document.getElementById("regGrade")?.value || "1";
+  const grade = document.getElementById("regGrade")?.value;
 
-  if (!name || !phone || !password) {
+  if (!name || !phone || !password || !grade) {
     alert("يرجى ملء جميع الحقول");
     return;
   }
 
-  try {
-    const studentRef = doc(db, `grades/${grade}/students/${phone}`);
-    const studentSnap = await getDoc(studentRef);
-    if (studentSnap.exists()) {
-      alert("رقم الهاتف مستخدم مسبقًا");
-      return;
-    }
+  if (!/^01[0-9]{9}$/.test(phone)) {
+    alert("رقم الهاتف غير صالح. يرجى إدخاله بدون كود الدولة (مثال: 1061234567)");
+    return;
+  }
 
+  phone = "+20" + phone;
+  const email = phoneToEmail(phone);
+
+  try {
+    // إنشاء مستخدم في Firebase Auth
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const uid = userCredential.user.uid;
+
+    // تخزين بيانات إضافية في Firestore
+    const studentRef = doc(db, `grades/${grade}/students/${uid}`);
     const studentData = {
       name,
       phone,
-      password,
       grade,
-      createdAt: serverTimestamp(),
+      createdAt: serverTimestamp()
     };
-
     await setDoc(studentRef, studentData);
-    alert("تم التسجيل بنجاح! يمكنك تسجيل الدخول الآن");
+
+    alert("✅ تم التسجيل بنجاح! يمكنك تسجيل الدخول الآن");
     showLogin();
+
   } catch (error) {
-    alert("حدث خطأ أثناء التسجيل: " + error.message);
+    if (error.code === "auth/email-already-in-use") {
+      alert("❌ رقم الهاتف مستخدم مسبقًا");
+    } else {
+      alert("حدث خطأ أثناء التسجيل: " + error.message);
+    }
   }
 };
 
-// تسجيل الدخول
+// ✅ تسجيل الدخول
 window.login = async function () {
   const phoneRaw = document.getElementById("loginPhone")?.value.trim();
   const password = document.getElementById("loginPassword")?.value.trim();
-  const phone = "+20" + phoneRaw;
 
   if (!phoneRaw || !password) {
     alert("يرجى إدخال رقم الهاتف وكلمة المرور");
     return;
   }
 
+  let phone = phoneRaw;
+  if (!phone.startsWith("+")) {
+    phone = "+20" + phone;
+  }
+
+  const email = phoneToEmail(phone);
+
   try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const uid = userCredential.user.uid;
+
+    // البحث عن بيانات الطالب
     const grades = ["1", "2", "3"];
     let found = false;
     for (const grade of grades) {
-      const studentRef = doc(db, `grades/${grade}/students/${phone}`);
+      const studentRef = doc(db, `grades/${grade}/students/${uid}`);
       const studentSnap = await getDoc(studentRef);
       if (studentSnap.exists()) {
         const student = studentSnap.data();
-        if (student.password === password) {
-          alert(`أهلًا ${student.name} 👋\nتم تسجيل الدخول بنجاح`);
-          found = true;
-          break;
-        } else {
-          alert("كلمة المرور غير صحيحة");
-          return;
-        }
+        alert(`أهلًا ${student.name} 👋\nتم تسجيل الدخول بنجاح`);
+        found = true;
+        break;
       }
     }
 
     if (!found) {
-      alert("الطالب غير مسجل بأي صف");
+      alert("لم يتم العثور على بيانات الطالب");
     }
+
   } catch (error) {
-    alert("حدث خطأ أثناء تسجيل الدخول: " + error.message);
+    if (error.code === "auth/user-not-found") {
+      alert("رقم الهاتف غير مسجل");
+    } else if (error.code === "auth/wrong-password") {
+      alert("كلمة المرور غير صحيحة");
+    } else {
+      alert("حدث خطأ أثناء تسجيل الدخول: " + error.message);
+    }
   }
 };
 
-// التبديل بين النماذج
+// ✅ التبديل بين النماذج
 window.showRegister = function () {
   document.getElementById("loginForm").classList.remove("active");
   document.getElementById("loginForm").classList.add("hidden");
@@ -110,7 +145,7 @@ window.showLogin = function () {
   document.getElementById("loginForm").classList.remove("hidden");
 };
 
-// نسيت كلمة المرور
+// 🔒 استعادة كلمة المرور (مستقبليًا)
 window.showForgotPassword = function () {
-  alert("قريبًا سيتم تفعيل استعادة كلمة المرور");
+  alert("سيتم تفعيل استعادة كلمة المرور قريبًا");
 };
