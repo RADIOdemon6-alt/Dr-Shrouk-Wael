@@ -68,8 +68,8 @@ window.register = async function () {
     };
     await setDoc(studentRef, studentData);
 
-    alert("✅ تم التسجيل بنجاح! يمكنك تسجيل الدخول الآن");
-    showLogin();
+    alert("✅ تم التسجيل بنجاح! سيتم تحويلك الآن");
+window.location.href = "../asset/page/home/index.html";
 
   } catch (error) {
     if (error.code === "auth/email-already-in-use") {
