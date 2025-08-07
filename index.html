@@ -25,37 +25,30 @@
       <button class="btn" onclick="login()">دخول</button>
       <p class="switch-form">ليس لديك حساب؟ <a href="#" onclick="showRegister()">إنشاء حساب</a></p>
     </div>
-
-    <!-- نموذج التسجيل -->
-    <div class="login-box hidden" id="registerForm">
-      <h2>تسجيل حساب جديد</h2>
-      <div class="input-group">
-        <input type="text" id="regName" placeholder="اسم الطالب">
-      </div>
-      <div class="input-group">
-        <select id="regCountryCode">
-          <option value="+20">مصر (+20)</option>
-          <option value="+966">السعودية (+966)</option>
-          <option value="+971">الإمارات (+971)</option>
-        </select>
-      </div>
-      <div class="input-group">
-        <input type="tel" id="regPhone" placeholder="رقم الهاتف">
-      </div>
-      <div class="input-group">
-        <input type="password" id="regPassword" placeholder="كلمة المرور">
-      </div>
-      <div class="input-group">
-        <select id="regGrade">
-          <option value="">اختر الصف</option>
-          <option value="1">أولى ثانوي</option>
-          <option value="2">ثانية ثانوي</option>
-          <option value="3">ثالثة ثانوي</option>
-        </select>
-      </div>
-      <button type="button" class="btn" onclick="register()">تسجيل</button>
-      <p class="switch-form">لديك حساب؟ <a href="#" onclick="showLogin()">دخول</a></p>
-    </div>
+<!-- نموذج التسجيل -->
+<div class="login-box hidden" id="registerForm">
+  <h2>تسجيل حساب جديد</h2>
+  <div class="input-group">
+    <input type="text" id="regName" placeholder="اسم الطالب">
+  </div>
+  <!-- تم حذف اختيار الدولة -->
+  <div class="input-group">
+    <input type="tel" id="regPhone" placeholder="رقم الهاتف (بدون كود الدولة)">
+  </div>
+  <div class="input-group">
+    <input type="password" id="regPassword" placeholder="كلمة المرور">
+  </div>
+  <div class="input-group">
+    <select id="regGrade">
+      <option value="">اختر الصف</option>
+      <option value="1">أولى ثانوي</option>
+      <option value="2">ثانية ثانوي</option>
+      <option value="3">ثالثة ثانوي</option>
+    </select>
+  </div>
+  <button type="button" class="btn" onclick="register()">تسجيل</button>
+  <p class="switch-form">لديك حساب؟ <a href="#" onclick="showLogin()">دخول</a></p>
+</div>
 
     <!-- نموذج نسيت كلمة المرور -->
     <div class="login-box hidden" id="forgotForm">
