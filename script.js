@@ -68,7 +68,7 @@ window.register = async function () {
     };
     await setDoc(studentRef, studentData);
 
-    alert("✅ تم التسجيل بنجاح! سيتم تحويلك الآن");
+    alert("تم تسجيل الدخول");
 window.location.href = "../asset/page/home/index.html";
 
   } catch (error) {
@@ -110,6 +110,7 @@ window.login = async function () {
       if (studentSnap.exists()) {
         const student = studentSnap.data();
         alert(`أهلًا ${student.name} 👋\nتم تسجيل الدخول بنجاح`);
+        window.location.href = "../asset/page/home/index.html";
         found = true;
         break;
       }
