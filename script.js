@@ -28,12 +28,12 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// 🔐 تحويل رقم الهاتف إلى بريد وهمي
+// تحويل رقم الهاتف إلى بريد وهمي
 function phoneToEmail(phone) {
   return phone.replace(/[^+\d]/g, '') + "@chemapp.com";
 }
 
-// ✅ تسجيل حساب جديد
+// تسجيل حساب جديد
 window.register = async function () {
   const name = document.getElementById("regName")?.value.trim();
   let phone = document.getElementById("regPhone")?.value.trim();
@@ -54,22 +54,30 @@ window.register = async function () {
   const email = phoneToEmail(phone);
 
   try {
-    // إنشاء مستخدم في Firebase Auth
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const uid = userCredential.user.uid;
 
-    // تخزين بيانات إضافية في Firestore
-    const studentRef = doc(db, `grades/${grade}/students/${uid}`);
-    const studentData = {
-      name,
-      phone,
-      grade,
-      createdAt: serverTimestamp()
-    };
-    await setDoc(studentRef, studentData);
+    if (grade === "teacher") {
+      const teacherRef = doc(db, `teachers/${uid}`);
+      const teacherData = {
+        name,
+        phone,
+        createdAt: serverTimestamp()
+      };
+      await setDoc(teacherRef, teacherData);
+    } else {
+      const studentRef = doc(db, `grades/${grade}/students/${uid}`);
+      const studentData = {
+        name,
+        phone,
+        grade,
+        createdAt: serverTimestamp()
+      };
+      await setDoc(studentRef, studentData);
+    }
 
-    alert("تم تسجيل الدخول");
-window.location.href = "../asset/page/home/index.html";
+    alert("تم تسجيل الحساب بنجاح");
+    window.location.href = "../asset/page/home/index.html";
 
   } catch (error) {
     if (error.code === "auth/email-already-in-use") {
@@ -80,7 +88,7 @@ window.location.href = "../asset/page/home/index.html";
   }
 };
 
-// ✅ تسجيل الدخول
+// تسجيل الدخول
 window.login = async function () {
   const phoneRaw = document.getElementById("loginPhone")?.value.trim();
   const password = document.getElementById("loginPassword")?.value.trim();
@@ -101,7 +109,19 @@ window.login = async function () {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const uid = userCredential.user.uid;
 
-    // البحث عن بيانات الطالب
+    if (password === "dr-shrouk-wael") {
+      const teacherRef = doc(db, `teachers/${uid}`);
+      const teacherSnap = await getDoc(teacherRef);
+      if (teacherSnap.exists()) {
+        alert(`مرحبًا أ/ ${teacherSnap.data().name} 👩‍🏫`);
+        window.location.href = "../asset/page/home/index.html";
+        return;
+      } else {
+        alert("لم يتم العثور على حساب المعلم");
+        return;
+      }
+    }
+
     const grades = ["1", "2", "3"];
     let found = false;
     for (const grade of grades) {
@@ -131,7 +151,7 @@ window.login = async function () {
   }
 };
 
-// ✅ التبديل بين النماذج
+// التبديل بين النماذج
 window.showRegister = function () {
   document.getElementById("loginForm").classList.remove("active");
   document.getElementById("loginForm").classList.add("hidden");
@@ -146,7 +166,7 @@ window.showLogin = function () {
   document.getElementById("loginForm").classList.remove("hidden");
 };
 
-// 🔒 استعادة كلمة المرور (مستقبليًا)
+// placeholder لاستعادة كلمة المرور
 window.showForgotPassword = function () {
   alert("سيتم تفعيل استعادة كلمة المرور قريبًا");
 };
