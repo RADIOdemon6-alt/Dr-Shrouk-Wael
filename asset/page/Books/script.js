@@ -5,7 +5,7 @@ import {
   addDoc,
   getDocs,
   getDoc,
-  deleteDoc, // 📌 إضافة استيراد الحذف
+  deleteDoc,
   doc,
   serverTimestamp
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
@@ -29,11 +29,11 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// 📌 إعداد GitHub
-const githubUser = "RADIOdemon6-alt";
-const repo = "Dr-Shrouk-Wael-storage-";
-const basePath = "storage/pdf/";
-const token = "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";
+// 📌 إعداد GitHub للـ PDF
+const repo = "RADIOdemon6/Dr-Shrouk-Wael-storage-"; // اسم المستخدم + اسم الريبو
+const pdfPath = "storage/pdf"; // مجلد الـ PDF داخل الريبو
+const token = "توكن_الـ_PDF_هنا";
+const apiUrl = `https://api.github.com/repos/${repo}/contents/${pdfPath}`;
 
 // 📌 عناصر الواجهة
 const uploadSection = document.querySelector(".upload-section");
@@ -51,64 +51,108 @@ document.body.appendChild(loadingSpinner);
 uploadSection.style.display = "none";
 onAuthStateChanged(auth, async (user) => {
   if (user) {
-    try {
-      const teacherRef = doc(db, "teachers", user.uid);
-      const teacherSnap = await getDoc(teacherRef);
+    const teacherRef = doc(db, "teachers", user.uid);
+    const teacherSnap = await getDoc(teacherRef);
 
-      if (teacherSnap.exists()) {
-        uploadSection.style.display = "block"; // معلم
-      } else {
-        uploadSection.style.display = "none"; // طالب
-      }
-
-      loadPDFs();
-    } catch (err) {
-      console.error("خطأ في التحقق من نوع المستخدم:", err);
+    if (teacherSnap.exists()) {
+      uploadSection.style.display = "block"; // معلم
+    } else {
+      uploadSection.style.display = "none"; // طالب
     }
+
+    loadPDFs();
   } else {
     window.location.href = "https://dr-shrouk-wael.vercel.app/";
   }
 });
 
-// 📤 رفع PDF إلى GitHub (مع تعديل إذا الملف موجود)
-async function uploadPDFToGitHub(file) {
+// 📤 رفع PDF
+async function uploadPDF(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = async function () {
+    reader.onload = async () => {
       const content = reader.result.split(",")[1];
-      const url = `https://api.github.com/repos/${githubUser}/${repo}/contents/${basePath}${encodeURIComponent(file.name)}`;
-
-      let sha = null;
-      try {
-        const checkRes = await fetch(url, { headers: { Authorization: `token ${token}` } });
-        if (checkRes.ok) {
-          const data = await checkRes.json();
-          sha = data.sha;
-        }
-      } catch {}
+      const fileUrl = `${apiUrl}/${encodeURIComponent(file.name)}`;
 
       try {
-        const res = await fetch(url, {
+        const res = await fetch(fileUrl, {
           method: "PUT",
           headers: {
-            "Authorization": `token ${token}`,
+            Authorization: `token ${token}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
             message: `رفع ملف ${file.name}`,
-            content: content,
-            ...(sha ? { sha } : {})
-          })
+            content: content
+          }),
         });
 
-        if (res.ok) resolve(await res.json());
-        else reject(await res.json());
-      } catch (error) {
-        reject(error);
+        if (res.ok) {
+          resolve(await res.json());
+        } else {
+          reject(await res.json());
+        }
+      } catch (err) {
+        reject(err);
       }
     };
     reader.readAsDataURL(file);
   });
+}
+
+// 📥 عرض الـ PDF مع زر ❌ للحذف
+async function loadPDFs() {
+  loadingSpinner.classList.remove("hidden");
+  pdfList.innerHTML = "";
+
+  const querySnapshot = await getDocs(collection(db, "books"));
+  querySnapshot.forEach((docSnap) => {
+    const data = docSnap.data();
+    const div = document.createElement("div");
+    div.className = "pdf-item";
+    div.innerHTML = `
+      <a href="https://raw.githubusercontent.com/${repo}/main/${pdfPath}/${encodeURIComponent(data.name)}" target="_blank">${data.name}</a>
+      <span class="delete-btn" style="cursor:pointer;color:red;margin-left:10px;">❌</span>
+    `;
+
+    // 📌 حذف عند الضغط على ❌
+    div.querySelector(".delete-btn").onclick = async () => {
+      if (!confirm(`هل تريد حذف ${data.name}؟`)) return;
+
+      try {
+        // جلب SHA من GitHub
+        const fileUrl = `${apiUrl}/${encodeURIComponent(data.name)}`;
+        const checkRes = await fetch(fileUrl, {
+          headers: { Authorization: `token ${token}` }
+        });
+        const fileData = await checkRes.json();
+
+        // حذف من GitHub
+        await fetch(fileUrl, {
+          method: "DELETE",
+          headers: {
+            Authorization: `token ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            message: `حذف ملف ${data.name}`,
+            sha: fileData.sha
+          }),
+        });
+
+        // حذف من Firestore
+        await deleteDoc(doc(db, "books", docSnap.id));
+
+        loadPDFs();
+      } catch (err) {
+        console.error("خطأ أثناء الحذف:", err);
+      }
+    };
+
+    pdfList.appendChild(div);
+  });
+
+  loadingSpinner.classList.add("hidden");
 }
 
 // 📌 عند الضغط على زر الرفع
@@ -122,7 +166,7 @@ uploadBtn.addEventListener("click", async () => {
 
   for (let file of pdfUpload.files) {
     try {
-      await uploadPDFToGitHub(file);
+      await uploadPDF(file);
       await addDoc(collection(db, "books"), {
         name: file.name,
         createdAt: serverTimestamp()
@@ -136,83 +180,3 @@ uploadBtn.addEventListener("click", async () => {
   pdfUpload.value = "";
   loadPDFs();
 });
-
-// 📥 عرض وحذف الكتب
-async function loadPDFs() {
-  loadingSpinner.classList.remove("hidden");
-  pdfList.innerHTML = "";
-
-  try {
-    const querySnapshot = await getDocs(collection(db, "books"));
-    querySnapshot.forEach((docSnap) => {
-      const data = docSnap.data();
-      const div = document.createElement("div");
-      div.className = "pdf-item";
-      div.innerHTML = `
-        <a href="https://raw.githubusercontent.com/${githubUser}/${repo}/main/${basePath}${encodeURIComponent(data.name)}" target="_blank">
-          ${data.name}
-        </a>
-        <span class="delete-btn" style="cursor:pointer;color:red;margin-left:10px;">❌</span>
-      `;
-
-      // 📌 حذف عند الضغط على ❌
-      div.querySelector(".delete-btn").onclick = async () => {
-        if (!confirm(`هل تريد حذف ${data.name}؟`)) return;
-
-        try {
-          const fileUrl = `https://api.github.com/repos/${githubUser}/${repo}/contents/${basePath}${encodeURIComponent(data.name)}`;
-          const checkRes = await fetch(fileUrl, { headers: { Authorization: `token ${token}` } });
-          const fileData = await checkRes.json();
-
-          // حذف من GitHub
-          await fetch(fileUrl, {
-            method: "DELETE",
-            headers: {
-              Authorization: `token ${token}`,
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              message: `حذف ملف ${data.name}`,
-              sha: fileData.sha
-            })
-          });
-
-          // حذف من Firestore
-          await deleteDoc(doc(db, "books", docSnap.id));
-
-          // تحديث القائمة
-          loadPDFs();
-        } catch (err) {
-          console.error("خطأ أثناء الحذف:", err);
-        }
-      };
-
-      pdfList.appendChild(div);
-    });
-  } catch (err) {
-    console.error("خطأ في تحميل الملفات:", err);
-  }
-
-  loadingSpinner.classList.add("hidden");
-}
-
-// 📌 بوب أب جدول العناصر
-const popup = document.getElementById("popup");
-const elementTableBtn = document.getElementById("elementTableBtn");
-const closePopup = document.getElementById("closePopup");
-
-elementTableBtn.addEventListener("click", () => {
-  popup.classList.remove("hidden");
-});
-
-closePopup.addEventListener("click", () => {
-  popup.classList.add("hidden");
-});
-
-// 🔄 تفعيل النڤيجيشن
-const list = document.querySelectorAll('.list');
-function activeLink() {
-  list.forEach((item) => item.classList.remove('active'));
-  this.classList.add('active');
-}
-list.forEach((item) => item.addEventListener('click', activeLink));
