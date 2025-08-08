@@ -170,14 +170,14 @@ body {
 /* ===== Navigation Bar ===== */
 .navigation {
   position: fixed;
-  bottom: 20px;
+  bottom: 0;
   left: 50%;
   transform: translateX(-50%);
   width: 400px;
   height: 70px;
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(15px);
-  border-radius: 20px;
+  border-radius: 20px 20px 0 0;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -192,7 +192,6 @@ body {
 .navigation ul {
   display: flex;
   width: 350px;
-  justify-content: space-between;
 }
 
 .navigation ul li {
@@ -254,7 +253,7 @@ body {
 }
 
 .navigation ul li.active a .circle {
-  transform: translateY(-37px) scalee(1);
+  transform: translateY(-37px) scale(1);
 }
 
 .indicator {
@@ -271,8 +270,18 @@ body {
     0 6px 12px rgba(0, 0, 0, 0.7);
 }
 
-.navigation ul li:nth-child(1).active ~ .indicator { transform: translateX(calc(70px * 0)); }
-.navigation ul li:nth-child(2).active ~ .indicator { transform: translateX(calc(70px * 1)); }
-.navigation ul li:nth-child(3).active ~ .indicator { transform: translateX(calc(70px * 2)); }
-.navigation ul li:nth-child(4).active ~ .indicator { transform: translateX(calc(70px * 3)); }
-.navigation ul li:nth-child(5).active ~ .indicator { transform: translateX(calc(70px * 4)); }
+.navigation ul li:nth-child(1).active ~ .indicator {
+  transform: translateX(calc(-70px * 0));
+}
+.navigation ul li:nth-child(2).active ~ .indicator {
+  transform: translateX(calc(-70px * 1));
+}
+.navigation ul li:nth-child(3).active ~ .indicator {
+  transform: translateX(calc(-70px * 2));
+}
+.navigation ul li:nth-child(4).active ~ .indicator {
+  transform: translateX(calc(-70px * 3));
+}
+.navigation ul li:nth-child(5).active ~ .indicator {
+  transform: translateX(calc(-70px * 4));
+}
