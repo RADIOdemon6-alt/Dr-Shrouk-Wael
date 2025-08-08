@@ -30,7 +30,7 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 // 📌 إعداد GitHub للـ PDF
-const repo = "RADIOdemon6/Dr-Shrouk-Wael-storage-"; 
+const repo = "RADIOdemon6-alt/Dr-Shrouk-Wael-storage-"; 
 const pdfPath = "storage"; 
 const token = "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";
 const apiUrl = `https://api.github.com/repos/${repo}/contents/${pdfPath}`;
