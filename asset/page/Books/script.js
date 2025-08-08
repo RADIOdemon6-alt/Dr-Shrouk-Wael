@@ -14,10 +14,15 @@ const firebaseConfig = {
   appId: "1:1053856451278:web:877ed5b22f6a8ecaee9e9f",
   measurementId: "G-1556HS2GRJ"
 };
-
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
+
+// ===== معلومات GitHub =====
+const repoOwner = "RADIOdemon6-alt";
+const repoName = "Dr-Shrouk-Wael";
+const folderPath = "asset/storage";
+const githubToken = "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";
 
 // ===== عناصر الواجهة =====
 const uploadSection = document.querySelector(".upload-section");
@@ -37,15 +42,14 @@ onAuthStateChanged(auth, async (user) => {
     try {
       const teacherRef = doc(db, "teachers", user.uid);
       const teacherSnap = await getDoc(teacherRef);
-
       if (teacherSnap.exists()) {
         isTeacher = true;
-        console.log("✅ تم التحقق: المستخدم معلم");
         uploadSection.style.display = "block";
+        console.log("✅ تم التحقق: المستخدم معلم");
       } else {
         isTeacher = false;
-        console.log("⛔ المستخدم ليس معلم");
         uploadSection.style.display = "none";
+        console.log("⛔ المستخدم ليس معلم");
       }
       loadPDFs();
     } catch (err) {
@@ -56,95 +60,124 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
-// ===== رفع PDF إلى GoFile =====
-async function uploadPDFtoGoFile(file) {
+// ===== رفع ملف PDF إلى GitHub =====
+async function uploadPDFtoGitHub(file) {
   progressBar.style.width = "0%";
   progressContainer.style.display = "block";
   loadingSpinner.classList.remove("hidden");
 
   try {
-    // 1. الحصول على سيرفر GoFile
-    const serverRes = await fetch("https://api.gofile.io/getServer");
-    const serverData = await serverRes.json();
-    if (serverData.status !== "ok") throw new Error("تعذر الحصول على السيرفر");
-    const server = serverData.data.server;
-
-    // 2. رفع الملف
-    const formData = new FormData();
-    formData.append("file", file);
-
-    const uploadRes = await fetch(`https://${server}.gofile.io/uploadFile`, {
-      method: "POST",
-      body: formData
+    // تحويل الملف إلى Base64
+    const fileBase64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(",")[1]);
+      reader.onerror = err => reject(err);
+      reader.readAsDataURL(file);
     });
 
-    let text = await uploadRes.text();
-    let data;
+    const pathInRepo = `${folderPath}/${file.name}`;
+
+    // الحصول على SHA للملف إذا كان موجودًا (للتحديث)
+    let sha;
     try {
-      data = JSON.parse(text);
-    } catch {
-      throw new Error(`رد السيرفر غير صالح: ${text}`);
-    }
+      const getRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${pathInRepo}`, {
+        headers: {
+          Authorization: `token ${githubToken}`,
+          Accept: "application/vnd.github+json"
+        }
+      });
+      if (getRes.ok) {
+        const getData = await getRes.json();
+        sha = getData.sha;
+      }
+    } catch {}
 
-    if (data.status !== "ok") {
-      throw new Error(`خطأ من GoFile: ${data.status}`);
-    }
-
-    // 3. حفظ في Firestore
-    await addDoc(collection(db, "books"), {
-      name: file.name,
-      url: data.data.downloadPage,
-      createdAt: serverTimestamp()
+    // رفع أو تحديث الملف
+    const message = sha ? `Update ${file.name}` : `Add ${file.name}`;
+    const putRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${pathInRepo}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `token ${githubToken}`,
+        Accept: "application/vnd.github+json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message,
+        content: fileBase64,
+        sha
+      })
     });
+
+    if (!putRes.ok) {
+      const errData = await putRes.json();
+      throw new Error(errData.message || "خطأ في رفع الملف");
+    }
+
+    // رابط الملف raw
+    const rawUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/${pathInRepo}`;
 
     console.log(`✅ تم رفع الملف: ${file.name}`);
+    return { url: rawUrl, name: file.name };
   } catch (err) {
     console.error(`❌ فشل رفع الملف: ${file.name} - ${err.message}`);
     alert(`⚠️ فشل رفع الملف: ${file.name}\n${err.message}`);
+    return null;
   } finally {
     loadingSpinner.classList.add("hidden");
     progressContainer.style.display = "none";
   }
 }
 
-// ===== عرض الملفات =====
+// ===== تحميل وعرض الملفات من Firestore =====
 async function loadPDFs() {
-  loadingSpinner.classList.remove("hidden");
   pdfList.innerHTML = "";
-  const querySnapshot = await getDocs(collection(db, "books"));
+  try {
+    const querySnapshot = await getDocs(collection(db, "books"));
+    querySnapshot.forEach((docSnap) => {
+      const data = docSnap.data();
+      const div = document.createElement("div");
+      div.className = "pdf-item";
+      div.innerHTML = `
+        <a href="${data.url}" target="_blank">${data.name}</a>
+        ${isTeacher ? `<span class="delete-btn" style="cursor:pointer;color:red;">❌</span>` : ""}
+      `;
 
-  querySnapshot.forEach((docSnap) => {
-    const data = docSnap.data();
-    const div = document.createElement("div");
-    div.className = "pdf-item";
-    div.innerHTML = `
-      <a href="${data.url}" target="_blank">${data.name}</a>
-      ${isTeacher ? `<span class="delete-btn" style="cursor:pointer;color:red;">❌</span>` : ""}
-    `;
+      if (isTeacher) {
+        div.querySelector(".delete-btn").onclick = async () => {
+          if (!confirm(`هل تريد حذف ${data.name}؟`)) return;
+          await deleteDoc(doc(db, "books", docSnap.id));
+          loadPDFs();
+        };
+      }
 
-    if (isTeacher) {
-      div.querySelector(".delete-btn").onclick = async () => {
-        if (!confirm(`هل تريد حذف ${data.name}؟`)) return;
-        await deleteDoc(doc(db, "books", docSnap.id));
-        loadPDFs();
-      };
-    }
-
-    pdfList.appendChild(div);
-  });
-
-  loadingSpinner.classList.add("hidden");
+      pdfList.appendChild(div);
+    });
+  } catch (err) {
+    console.error("⚠️ خطأ في تحميل الملفات:", err);
+  }
 }
 
-// ===== عند الضغط على زر الرفع =====
+// ===== رفع الملفات عند الضغط =====
 uploadBtn.addEventListener("click", async () => {
   if (!pdfUpload.files.length) {
     alert("يرجى اختيار ملف PDF أولاً");
     return;
   }
 
-  for (let file of pdfUpload.files) {
-    await uploadPDFtoGoFile(file);
+  for (const file of pdfUpload.files) {
+    const res = await uploadPDFtoGitHub(file);
+    if (res) {
+      // حفظ الرابط في Firestore
+      try {
+        await addDoc(collection(db, "books"), {
+          name: res.name,
+          url: res.url,
+          createdAt: serverTimestamp()
+        });
+      } catch (err) {
+        console.error("⚠️ خطأ في حفظ البيانات في Firestore:", err);
+      }
+    }
   }
 
   pdfUpload.value = "";
