@@ -28,33 +28,31 @@ const loadingSpinner = document.getElementById("loadingSpinner");
 const progressContainer = document.getElementById("progressContainer");
 const progressBar = document.getElementById("progressBar");
 
-let isTeacher = null; // null = لسه ما تحققناش
+let isTeacher = false;
+uploadSection.style.display = "none";
 
 // ===== التحقق من المعلم =====
-uploadSection.style.display = "none";
 onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    console.error("🚫 لم يتم تسجيل الدخول، إعادة توجيه...");
-    window.location.href = "/";
-    return;
-  }
+  if (user) {
+    try {
+      const teacherRef = doc(db, "teachers", user.uid);
+      const teacherSnap = await getDoc(teacherRef);
 
-  try {
-    const teacherRef = doc(db, "teachers", user.uid);
-    const teacherSnap = await getDoc(teacherRef);
-
-    if (teacherSnap.exists()) {
-      isTeacher = true;
-      console.log("✅ تم التحقق: المستخدم معلم");
-      uploadSection.style.display = "block";
-    } else {
-      isTeacher = false;
-      console.error("❌ المستخدم ليس معلمًا");
+      if (teacherSnap.exists()) {
+        isTeacher = true;
+        console.log("✅ تم التحقق: المستخدم معلم");
+        uploadSection.style.display = "block";
+      } else {
+        isTeacher = false;
+        console.log("⛔ المستخدم ليس معلم");
+        uploadSection.style.display = "none";
+      }
+      loadPDFs();
+    } catch (err) {
+      console.error("⚠️ خطأ أثناء التحقق من المعلم:", err);
     }
-
-    await loadPDFs();
-  } catch (err) {
-    console.error("⚠️ خطأ أثناء التحقق من المعلم:", err);
+  } else {
+    window.location.href = "https://dr-shrouk-wael.vercel.app/";
   }
 });
 
@@ -69,55 +67,43 @@ async function uploadPDFtoGoFile(file) {
     const serverRes = await fetch("https://api.gofile.io/getServer");
     const serverData = await serverRes.json();
     if (serverData.status !== "ok") throw new Error("تعذر الحصول على السيرفر");
-
     const server = serverData.data.server;
 
     // 2. رفع الملف
     const formData = new FormData();
     formData.append("file", file);
 
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", `https://${server}.gofile.io/uploadFile`);
-
-    return await new Promise((resolve, reject) => {
-      xhr.upload.onprogress = (event) => {
-        if (event.lengthComputable) {
-          const percent = Math.round((event.loaded / event.total) * 100);
-          progressBar.style.width = percent + "%";
-        }
-      };
-
-      xhr.onload = async () => {
-        try {
-          const data = JSON.parse(xhr.responseText);
-          if (data.status === "ok") {
-            const fileUrl = data.data.downloadPage;
-
-            await addDoc(collection(db, "books"), {
-              name: file.name,
-              url: fileUrl,
-              createdAt: serverTimestamp()
-            });
-            console.log(`📤 تم رفع الملف: ${file.name}`);
-            resolve(true);
-          } else {
-            throw new Error(data.status);
-          }
-        } catch (err) {
-          reject(err);
-        } finally {
-          progressContainer.style.display = "none";
-          loadingSpinner.classList.add("hidden");
-        }
-      };
-
-      xhr.onerror = () => reject("خطأ في الاتصال بالسيرفر");
-      xhr.send(formData);
+    const uploadRes = await fetch(`https://${server}.gofile.io/uploadFile`, {
+      method: "POST",
+      body: formData
     });
 
+    let text = await uploadRes.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      throw new Error(`رد السيرفر غير صالح: ${text}`);
+    }
+
+    if (data.status !== "ok") {
+      throw new Error(`خطأ من GoFile: ${data.status}`);
+    }
+
+    // 3. حفظ في Firestore
+    await addDoc(collection(db, "books"), {
+      name: file.name,
+      url: data.data.downloadPage,
+      createdAt: serverTimestamp()
+    });
+
+    console.log(`✅ تم رفع الملف: ${file.name}`);
   } catch (err) {
-    console.error("❌ خطأ أثناء رفع الملف:", err.message || err);
-    return false;
+    console.error(`❌ فشل رفع الملف: ${file.name} - ${err.message}`);
+    alert(`⚠️ فشل رفع الملف: ${file.name}\n${err.message}`);
+  } finally {
+    loadingSpinner.classList.add("hidden");
+    progressContainer.style.display = "none";
   }
 }
 
@@ -150,26 +136,15 @@ async function loadPDFs() {
   loadingSpinner.classList.add("hidden");
 }
 
-// ===== رفع عند الضغط =====
+// ===== عند الضغط على زر الرفع =====
 uploadBtn.addEventListener("click", async () => {
-  if (isTeacher === null) {
-    alert("⏳ جاري التحقق من حسابك...");
-    return;
-  }
-  if (!isTeacher) {
-    alert("❌ مسموح بالرفع للمعلمين فقط");
-    return;
-  }
   if (!pdfUpload.files.length) {
-    alert("📂 يرجى اختيار ملف PDF أولاً");
+    alert("يرجى اختيار ملف PDF أولاً");
     return;
   }
 
   for (let file of pdfUpload.files) {
-    const success = await uploadPDFtoGoFile(file);
-    if (!success) {
-      console.error(`⚠️ فشل رفع الملف: ${file.name}`);
-    }
+    await uploadPDFtoGoFile(file);
   }
 
   pdfUpload.value = "";
