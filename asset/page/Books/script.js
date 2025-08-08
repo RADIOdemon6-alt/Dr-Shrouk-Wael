@@ -45,7 +45,7 @@ document.body.appendChild(loadingSpinner);
 
 // 🎯 عرض أو إخفاء أزرار الرفع حسب نوع المستخدم
 import { getDoc, doc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-
+uploadSection.style.display = "none";
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     const uid = user.uid;
