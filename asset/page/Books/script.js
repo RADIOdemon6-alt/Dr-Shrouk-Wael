@@ -1,4 +1,4 @@
-// 📌 إعداد Firebase
+// ===== إعداد Firebase =====
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
 import {
   getFirestore,
@@ -29,25 +29,41 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// 📌 إعداد GitHub
+// ===== إعداد GitHub =====
 const owner = "RADIOdemon6-alt";
 const repo = "Dr-Shrouk-Wael-storage-";
 const pdfPath = "storage";
-const token = "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";
-const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${pdfPath}`;
+const token = "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"; // ضع التوكين
 
-// 📌 عناصر الواجهة
+// ===== عناصر الواجهة =====
 const uploadSection = document.querySelector(".upload-section");
 const uploadBtn = document.getElementById("uploadBtn");
 const pdfUpload = document.getElementById("pdfUpload");
 const pdfList = document.getElementById("pdfList");
 
-// 🌀 اللودينج + شريط التقدم
+// ===== اللودينج (Spinner) =====
 const loadingSpinner = document.createElement("div");
 loadingSpinner.className = "loading-spinner hidden";
-loadingSpinner.innerHTML = `<div class="spinner"></div>`;
+loadingSpinner.innerHTML = `<div class="spinner" style="
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #3498db;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;">
+</div>`;
 document.body.appendChild(loadingSpinner);
 
+const style = document.createElement("style");
+style.innerHTML = `
+.hidden { display: none; }
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}`;
+document.head.appendChild(style);
+
+// ===== شريط التقدم =====
 const progressContainer = document.createElement("div");
 progressContainer.style.width = "100%";
 progressContainer.style.background = "#ddd";
@@ -65,7 +81,7 @@ progressBar.style.transition = "width 0.3s";
 progressContainer.appendChild(progressBar);
 document.body.appendChild(progressContainer);
 
-// 🎯 التحقق من نوع المستخدم
+// ===== التحقق من المستخدم =====
 uploadSection.style.display = "none";
 onAuthStateChanged(auth, async (user) => {
   if (user) {
@@ -77,14 +93,13 @@ onAuthStateChanged(auth, async (user) => {
     } else {
       uploadSection.style.display = "none"; // طالب
     }
-
     loadPDFs();
   } else {
     window.location.href = "https://dr-shrouk-wael.vercel.app/";
   }
 });
 
-// 📤 رفع PDF إلى GitHub + حفظ الرابط
+// ===== رفع PDF =====
 async function uploadPDF(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -127,8 +142,7 @@ async function uploadPDF(file) {
           });
           resolve(true);
         } else {
-          const errorData = await res.json();
-          reject(errorData);
+          reject(await res.json());
         }
       } catch (err) {
         reject(err);
@@ -144,12 +158,12 @@ async function uploadPDF(file) {
   });
 }
 
-// 📥 عرض الـ PDF مع زر الحذف
+// ===== عرض الـ PDF =====
 async function loadPDFs() {
   loadingSpinner.classList.remove("hidden");
   pdfList.innerHTML = "";
-
   const querySnapshot = await getDocs(collection(db, "books"));
+
   querySnapshot.forEach((docSnap) => {
     const data = docSnap.data();
     const div = document.createElement("div");
@@ -159,9 +173,10 @@ async function loadPDFs() {
       <span class="delete-btn" style="cursor:pointer;color:red;margin-left:10px;">❌</span>
     `;
 
-    // 📌 حذف عند الضغط على ❌
+    // حذف عند الضغط على ❌
     div.querySelector(".delete-btn").onclick = async () => {
       if (!confirm(`هل تريد حذف ${data.name}؟`)) return;
+      loadingSpinner.classList.remove("hidden");
 
       try {
         const filePath = `${pdfPath}/${encodeURIComponent(data.name)}`;
@@ -172,6 +187,7 @@ async function loadPDFs() {
 
         if (!fileData.sha) {
           alert("لم يتم العثور على الملف في GitHub.");
+          loadingSpinner.classList.add("hidden");
           return;
         }
 
@@ -190,10 +206,11 @@ async function loadPDFs() {
 
         // حذف من Firestore
         await deleteDoc(doc(db, "books", docSnap.id));
-
         loadPDFs();
       } catch (err) {
         console.error("خطأ أثناء الحذف:", err);
+      } finally {
+        loadingSpinner.classList.add("hidden");
       }
     };
 
@@ -203,7 +220,7 @@ async function loadPDFs() {
   loadingSpinner.classList.add("hidden");
 }
 
-// 📌 زر رفع الملفات
+// ===== حدث الضغط على زر الرفع =====
 uploadBtn.addEventListener("click", async () => {
   if (!pdfUpload.files.length) {
     alert("يرجى اختيار ملف PDF أولاً");
