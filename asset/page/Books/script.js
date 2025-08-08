@@ -30,7 +30,7 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 // 📌 إعداد GitHub
-const githubUser = "RADIOdemon6";
+const githubUser = "RADIOdemon6-alt";
 const repo = "Dr-Shrouk-Wael-storage-";
 const basePath = "storage/pdf/";
 const token = "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";
