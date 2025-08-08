@@ -39,10 +39,10 @@ onAuthStateChanged(auth, async (user) => {
 
     if (teacherSnap.exists()) {
       isTeacher = true;
-      uploadSection.style.display = "block"; // معلم
+      uploadSection.style.display = "block";
     } else {
       isTeacher = false;
-      uploadSection.style.display = "none"; // طالب
+      uploadSection.style.display = "none";
     }
     loadPDFs();
   } else {
@@ -50,59 +50,68 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
-// ===== رفع PDF إلى GoFile مع شريط تقدم =====
-function uploadPDFtoGoFile(file) {
-  return new Promise((resolve, reject) => {
-    progressBar.style.width = "0%";
-    progressContainer.style.display = "block";
+// ===== رفع PDF إلى GoFile =====
+async function uploadPDFtoGoFile(file) {
+  progressBar.style.width = "0%";
+  progressContainer.style.display = "block";
+  loadingSpinner.classList.remove("hidden");
 
+  try {
+    // 1. الحصول على سيرفر GoFile
+    const serverRes = await fetch("https://api.gofile.io/getServer");
+    const serverData = await serverRes.json();
+    if (serverData.status !== "ok") throw new Error("تعذر الحصول على السيرفر");
+
+    const server = serverData.data.server;
+
+    // 2. رفع الملف
     const formData = new FormData();
     formData.append("file", file);
 
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", "https://store1.gofile.io/contents/uploadfile");
+    xhr.open("POST", `https://${server}.gofile.io/uploadFile`);
 
-    // متابعة التقدم
-    xhr.upload.onprogress = (event) => {
-      if (event.lengthComputable) {
-        const percent = Math.round((event.loaded / event.total) * 100);
-        progressBar.style.width = percent + "%";
-      }
-    };
-
-    xhr.onloadstart = () => {
-      progressBar.style.width = "0%";
-      loadingSpinner.classList.remove("hidden");
-    };
-
-    xhr.onload = async () => {
-      try {
-        const data = JSON.parse(xhr.responseText);
-        if (data.status === "ok") {
-          const fileUrl = data.data.downloadPage;
-          await addDoc(collection(db, "books"), {
-            name: file.name,
-            url: fileUrl,
-            createdAt: serverTimestamp()
-          });
-          resolve(true);
-        } else {
-          reject(data);
+    return await new Promise((resolve, reject) => {
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const percent = Math.round((event.loaded / event.total) * 100);
+          progressBar.style.width = percent + "%";
         }
-      } catch (err) {
-        reject(err);
-      } finally {
-        setTimeout(() => {
-          progressContainer.style.display = "none";
-        }, 800);
-        loadingSpinner.classList.add("hidden");
-      }
-    };
+      };
 
-    xhr.onerror = () => reject("خطأ في الاتصال بالسيرفر");
+      xhr.onload = async () => {
+        try {
+          const data = JSON.parse(xhr.responseText);
+          if (data.status === "ok") {
+            const fileUrl = data.data.downloadPage;
 
-    xhr.send(formData);
-  });
+            await addDoc(collection(db, "books"), {
+              name: file.name,
+              url: fileUrl,
+              createdAt: serverTimestamp()
+            });
+            resolve(true);
+          } else {
+            reject(data);
+          }
+        } catch (err) {
+          reject(err);
+        } finally {
+          setTimeout(() => {
+            progressContainer.style.display = "none";
+          }, 800);
+          loadingSpinner.classList.add("hidden");
+        }
+      };
+
+      xhr.onerror = () => reject("خطأ في الاتصال بالسيرفر");
+      xhr.send(formData);
+    });
+
+  } catch (err) {
+    console.error(err);
+    alert("حدث خطأ أثناء رفع الملف");
+  }
 }
 
 // ===== عرض الملفات =====
@@ -134,7 +143,7 @@ async function loadPDFs() {
   loadingSpinner.classList.add("hidden");
 }
 
-// ===== حدث الضغط على زر الرفع =====
+// ===== رفع عند الضغط =====
 uploadBtn.addEventListener("click", async () => {
   if (!pdfUpload.files.length) {
     alert("يرجى اختيار ملف PDF أولاً");
@@ -142,11 +151,7 @@ uploadBtn.addEventListener("click", async () => {
   }
 
   for (let file of pdfUpload.files) {
-    try {
-      await uploadPDFtoGoFile(file);
-    } catch (err) {
-      console.error("خطأ في رفع الملف:", err);
-    }
+    await uploadPDFtoGoFile(file);
   }
 
   pdfUpload.value = "";
