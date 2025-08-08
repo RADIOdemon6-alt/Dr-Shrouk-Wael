@@ -22,7 +22,7 @@ const auth = getAuth(app);
 const repoOwner = "RADIOdemon6-alt";
 const repoName = "Dr-Shrouk-Wael";
 const folderPath = "asset/storage";
-const githubToken = "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";
+const githubToken = "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";
 
 // ===== عناصر الواجهة =====
 const uploadSection = document.querySelector(".upload-section");
