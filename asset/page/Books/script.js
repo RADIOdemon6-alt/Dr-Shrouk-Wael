@@ -5,6 +5,7 @@ import {
   addDoc,
   getDocs,
   getDoc,
+  deleteDoc, // 📌 إضافة استيراد الحذف
   doc,
   serverTimestamp
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
@@ -55,11 +56,9 @@ onAuthStateChanged(auth, async (user) => {
       const teacherSnap = await getDoc(teacherRef);
 
       if (teacherSnap.exists()) {
-        // معلم
-        uploadSection.style.display = "block";
+        uploadSection.style.display = "block"; // معلم
       } else {
-        // طالب
-        uploadSection.style.display = "none";
+        uploadSection.style.display = "none"; // طالب
       }
 
       loadPDFs();
@@ -71,7 +70,7 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
-// 📤 رفع PDF إلى GitHub
+// 📤 رفع PDF إلى GitHub (مع تعديل إذا الملف موجود)
 async function uploadPDFToGitHub(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -81,10 +80,7 @@ async function uploadPDFToGitHub(file) {
 
       let sha = null;
       try {
-        // تحقق إذا الملف موجود عشان نعمل تحديث بدل إنشاء جديد
-        const checkRes = await fetch(url, {
-          headers: { Authorization: `token ${token}` }
-        });
+        const checkRes = await fetch(url, { headers: { Authorization: `token ${token}` } });
         if (checkRes.ok) {
           const data = await checkRes.json();
           sha = data.sha;
@@ -101,84 +97,18 @@ async function uploadPDFToGitHub(file) {
           body: JSON.stringify({
             message: `رفع ملف ${file.name}`,
             content: content,
-            ...(sha ? { sha } : {}) // لو موجود sha يعمل تعديل بدل إنشاء جديد
+            ...(sha ? { sha } : {})
           })
         });
 
-        if (res.ok) {
-          resolve(await res.json());
-        } else {
-          reject(await res.json());
-        }
+        if (res.ok) resolve(await res.json());
+        else reject(await res.json());
       } catch (error) {
         reject(error);
       }
     };
     reader.readAsDataURL(file);
   });
-}
-
-// 📥 عرض وحذف الكتب
-async function loadPDFs() {
-  loadingSpinner.classList.remove("hidden");
-  pdfList.innerHTML = "";
-
-  try {
-    const querySnapshot = await getDocs(collection(db, "books"));
-    querySnapshot.forEach((docSnap) => {
-      const data = docSnap.data();
-      const div = document.createElement("div");
-      div.className = "pdf-item";
-      div.innerHTML = `
-        <a href="https://raw.githubusercontent.com/${githubUser}/${repo}/main/${basePath}${encodeURIComponent(data.name)}" target="_blank">
-          ${data.name}
-        </a>
-        <span class="delete-btn" style="cursor:pointer;color:red;margin-left:10px;">❌</span>
-      `;
-
-      // 📌 عند الضغط على ❌ يتم الحذف
-      div.querySelector(".delete-btn").onclick = async () => {
-        if (!confirm(`هل تريد حذف ${data.name}؟`)) return;
-
-        try {
-          // جلب sha الخاص بالملف من GitHub
-          const fileUrl = `https://api.github.com/repos/${githubUser}/${repo}/contents/${basePath}${encodeURIComponent(data.name)}`;
-          const checkRes = await fetch(fileUrl, {
-            headers: { Authorization: `token ${token}` }
-          });
-          const fileData = await checkRes.json();
-
-          // حذف من GitHub
-          await fetch(fileUrl, {
-            method: "DELETE",
-            headers: {
-              Authorization: `token ${token}`,
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              message: `حذف ملف ${data.name}`,
-              sha: fileData.sha
-            })
-          });
-
-          // حذف من Firestore
-          await deleteDoc(doc(db, "books", docSnap.id));
-
-          // تحديث القائمة
-          loadPDFs();
-        } catch (err) {
-          console.error("خطأ أثناء الحذف:", err);
-        }
-      };
-
-      pdfList.appendChild(div);
-    });
-  } catch (err) {
-    console.error("خطأ في تحميل الملفات:", err);
-  }
-
-  loadingSpinner.classList.add("hidden");
-}
 }
 
 // 📌 عند الضغط على زر الرفع
@@ -207,18 +137,56 @@ uploadBtn.addEventListener("click", async () => {
   loadPDFs();
 });
 
-// 📥 عرض الكتب
+// 📥 عرض وحذف الكتب
 async function loadPDFs() {
   loadingSpinner.classList.remove("hidden");
   pdfList.innerHTML = "";
 
   try {
     const querySnapshot = await getDocs(collection(db, "books"));
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
+    querySnapshot.forEach((docSnap) => {
+      const data = docSnap.data();
       const div = document.createElement("div");
       div.className = "pdf-item";
-      div.innerHTML = `<a href="https://raw.githubusercontent.com/${githubUser}/${repo}/main/${basePath}${encodeURIComponent(data.name)}" target="_blank">${data.name}</a>`;
+      div.innerHTML = `
+        <a href="https://raw.githubusercontent.com/${githubUser}/${repo}/main/${basePath}${encodeURIComponent(data.name)}" target="_blank">
+          ${data.name}
+        </a>
+        <span class="delete-btn" style="cursor:pointer;color:red;margin-left:10px;">❌</span>
+      `;
+
+      // 📌 حذف عند الضغط على ❌
+      div.querySelector(".delete-btn").onclick = async () => {
+        if (!confirm(`هل تريد حذف ${data.name}؟`)) return;
+
+        try {
+          const fileUrl = `https://api.github.com/repos/${githubUser}/${repo}/contents/${basePath}${encodeURIComponent(data.name)}`;
+          const checkRes = await fetch(fileUrl, { headers: { Authorization: `token ${token}` } });
+          const fileData = await checkRes.json();
+
+          // حذف من GitHub
+          await fetch(fileUrl, {
+            method: "DELETE",
+            headers: {
+              Authorization: `token ${token}`,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              message: `حذف ملف ${data.name}`,
+              sha: fileData.sha
+            })
+          });
+
+          // حذف من Firestore
+          await deleteDoc(doc(db, "books", docSnap.id));
+
+          // تحديث القائمة
+          loadPDFs();
+        } catch (err) {
+          console.error("خطأ أثناء الحذف:", err);
+        }
+      };
+
       pdfList.appendChild(div);
     });
   } catch (err) {
