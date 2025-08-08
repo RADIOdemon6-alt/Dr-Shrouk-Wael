@@ -167,6 +167,45 @@ body {
 @keyframes spin {
   to { transform: rotate(360deg); }
 } 
+/* ===== pdf-item ===== */
+.pdf-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  background: #fff;
+  transition: background 0.2s ease;
+}
+
+.pdf-item:hover {
+  background: #f9f9f9;
+}
+
+.pdf-item a {
+  text-decoration: none;
+  color: #007bff;
+  flex: 1;
+}
+
+.pdf-item a:hover {
+  text-decoration: underline;
+}
+
+.delete-btn {
+  cursor: pointer;
+  color: red;
+  font-weight: bold;
+  font-size: 18px;
+  padding: 0 6px;
+  transition: color 0.2s ease;
+}
+
+.delete-btn:hover {
+  color: darkred;
+} 
 /* ===== Navigation Bar ===== */
 .navigation {
   position: fixed;
