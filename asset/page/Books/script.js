@@ -4,6 +4,8 @@ import {
   collection,
   addDoc,
   getDocs,
+  getDoc,
+  doc,
   serverTimestamp
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 import {
@@ -11,7 +13,7 @@ import {
   onAuthStateChanged
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
-// إعداد Firebase
+// 📌 إعداد Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBSqV0VQGR3048_bhhDx7NYboe2jaYc85Y",
   authDomain: "dr-shrouk-wael.firebaseapp.com",
@@ -26,12 +28,13 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// إعداد GitHub
+// 📌 إعداد GitHub
 const githubUser = "RADIOdemon6";
 const repo = "Dr-Shrouk-Wael-storage-";
 const basePath = "storage/pdf/";
 const token = "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";
 
+// 📌 عناصر الواجهة
 const uploadSection = document.querySelector(".upload-section");
 const uploadBtn = document.getElementById("uploadBtn");
 const pdfUpload = document.getElementById("pdfUpload");
@@ -43,60 +46,66 @@ loadingSpinner.className = "loading-spinner hidden";
 loadingSpinner.innerHTML = `<div class="spinner"></div>`;
 document.body.appendChild(loadingSpinner);
 
-// 🎯 عرض أو إخفاء أزرار الرفع حسب نوع المستخدم
-import { getDoc, doc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+// 🎯 التحقق من نوع المستخدم
 uploadSection.style.display = "none";
 onAuthStateChanged(auth, async (user) => {
   if (user) {
-    const uid = user.uid;
-    const teacherRef = doc(db, "teachers", uid);
-    const teacherSnap = await getDoc(teacherRef);
+    try {
+      const teacherRef = doc(db, "teachers", user.uid);
+      const teacherSnap = await getDoc(teacherRef);
 
-    if (teacherSnap.exists()) {
-      // المستخدم معلم
-      uploadSection.style.display = "block";
-    } else {
-      // المستخدم طالب
-      uploadSection.style.display = "none";
+      if (teacherSnap.exists()) {
+        // معلم
+        uploadSection.style.display = "block";
+      } else {
+        // طالب
+        uploadSection.style.display = "none";
+      }
+
+      loadPDFs();
+    } catch (err) {
+      console.error("خطأ في التحقق من نوع المستخدم:", err);
     }
-
-    loadPDFs();
   } else {
     window.location.href = "https://dr-shrouk-wael.vercel.app/";
   }
 });
 
-// 📤 رفع الكتب إلى GitHub
+// 📤 رفع PDF إلى GitHub
 async function uploadPDFToGitHub(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = async function () {
       const content = reader.result.split(",")[1];
+      const url = `https://api.github.com/repos/${githubUser}/${repo}/contents/${basePath}${encodeURIComponent(file.name)}`;
 
-      const url = `https://api.github.com/repos/${githubUser}/${repo}/contents/${basePath}${file.name}`;
+      try {
+        const res = await fetch(url, {
+          method: "PUT",
+          headers: {
+            "Authorization": `token ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            message: `رفع ملف ${file.name}`,
+            content: content
+          })
+        });
 
-      const res = await fetch(url, {
-        method: "PUT",
-        headers: {
-          "Authorization": `token ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          message: `رفع ملف ${file.name}`,
-          content: content
-        })
-      });
-
-      if (res.ok) {
-        resolve(await res.json());
-      } else {
-        reject(await res.json());
+        if (res.ok) {
+          resolve(await res.json());
+        } else {
+          reject(await res.json());
+        }
+      } catch (error) {
+        reject(error);
       }
     };
     reader.readAsDataURL(file);
   });
 }
 
+// 📌 عند الضغط على زر الرفع
 uploadBtn.addEventListener("click", async () => {
   if (!pdfUpload.files.length) {
     alert("يرجى اختيار ملف PDF أولاً");
@@ -127,14 +136,18 @@ async function loadPDFs() {
   loadingSpinner.classList.remove("hidden");
   pdfList.innerHTML = "";
 
-  const querySnapshot = await getDocs(collection(db, "books"));
-  querySnapshot.forEach((doc) => {
-    const data = doc.data();
-    const div = document.createElement("div");
-    div.className = "pdf-item";
-    div.innerHTML = `<a href="https://raw.githubusercontent.com/${githubUser}/${repo}/main/${basePath}${encodeURIComponent(data.name)}" target="_blank">${data.name}</a>`;
-    pdfList.appendChild(div);
-  });
+  try {
+    const querySnapshot = await getDocs(collection(db, "books"));
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      const div = document.createElement("div");
+      div.className = "pdf-item";
+      div.innerHTML = `<a href="https://raw.githubusercontent.com/${githubUser}/${repo}/main/${basePath}${encodeURIComponent(data.name)}" target="_blank">${data.name}</a>`;
+      pdfList.appendChild(div);
+    });
+  } catch (err) {
+    console.error("خطأ في تحميل الملفات:", err);
+  }
 
   loadingSpinner.classList.add("hidden");
 }
