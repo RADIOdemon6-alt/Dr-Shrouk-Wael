@@ -32,7 +32,7 @@ const auth = getAuth(app);
 // 📌 إعداد GitHub للـ PDF
 const repo = "RADIOdemon6/Dr-Shrouk-Wael-storage-"; // اسم المستخدم + اسم الريبو
 const pdfPath = "storage/pdf"; // مجلد الـ PDF داخل الريبو
-const token = "توكن_الـ_PDF_هنا";
+const token = "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";
 const apiUrl = `https://api.github.com/repos/${repo}/contents/${pdfPath}`;
 
 // 📌 عناصر الواجهة
