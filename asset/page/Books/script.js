@@ -88,7 +88,6 @@ async function uploadPDF(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
 
-    // تحديث نسبة التحميل أثناء القراءة
     reader.onprogress = (event) => {
       if (event.lengthComputable) {
         const percent = Math.round((event.loaded / event.total) * 100);
@@ -101,18 +100,12 @@ async function uploadPDF(file) {
       progressContainer.style.display = "block";
     };
 
-    reader.onloadend = () => {
-      progressBar.style.width = "100%";
-      setTimeout(() => {
-        progressContainer.style.display = "none";
-      }, 800);
-    };
-
     reader.onload = async () => {
       const content = reader.result.split(",")[1];
+      const filePath = `${pdfPath}/${encodeURIComponent(file.name)}`;
 
       try {
-        const res = await fetch(`${apiUrl}/${encodeURIComponent(file.name)}`, {
+        const res = await fetch(`https://api.github.com/repos/${repo}/contents/${filePath}`, {
           method: "PUT",
           headers: {
             Authorization: `token ${token}`,
@@ -125,22 +118,24 @@ async function uploadPDF(file) {
         });
 
         if (res.ok) {
-          const data = await res.json();
           const fileUrl = `https://raw.githubusercontent.com/${repo}/main/${pdfPath}/${encodeURIComponent(file.name)}`;
-          
-          // حفظ في Firestore
           await addDoc(collection(db, "books"), {
             name: file.name,
             url: fileUrl,
             createdAt: serverTimestamp()
           });
-
-          resolve(data);
+          resolve(true);
         } else {
-          reject(await res.json());
+          const errorData = await res.json();
+          reject(errorData);
         }
       } catch (err) {
         reject(err);
+      } finally {
+        progressBar.style.width = "100%";
+        setTimeout(() => {
+          progressContainer.style.display = "none";
+        }, 800);
       }
     };
 
@@ -168,8 +163,8 @@ async function loadPDFs() {
       if (!confirm(`هل تريد حذف ${data.name}؟`)) return;
 
       try {
-        // جلب SHA من GitHub
-        const checkRes = await fetch(`${apiUrl}/${encodeURIComponent(data.name)}`, {
+        const filePath = `${pdfPath}/${encodeURIComponent(data.name)}`;
+        const checkRes = await fetch(`https://api.github.com/repos/${repo}/contents/${filePath}`, {
           headers: { Authorization: `token ${token}` }
         });
         const fileData = await checkRes.json();
@@ -180,7 +175,7 @@ async function loadPDFs() {
         }
 
         // حذف من GitHub
-        await fetch(`${apiUrl}/${encodeURIComponent(data.name)}`, {
+        await fetch(`https://api.github.com/repos/${repo}/contents/${filePath}`, {
           method: "DELETE",
           headers: {
             Authorization: `token ${token}`,
