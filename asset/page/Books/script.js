@@ -30,8 +30,8 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 // 📌 إعداد GitHub للـ PDF
-const repo = "RADIOdemon6/Dr-Shrouk-Wael-storage-"; // اسم المستخدم + اسم الريبو
-const pdfPath = "storage/pdf"; // مجلد الـ PDF داخل الريبو
+const repo = "RADIOdemon6/Dr-Shrouk-Wael-storage-"; 
+const pdfPath = "storage/pdf"; 
 const token = "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";
 const apiUrl = `https://api.github.com/repos/${repo}/contents/${pdfPath}`;
 
@@ -41,11 +41,28 @@ const uploadBtn = document.getElementById("uploadBtn");
 const pdfUpload = document.getElementById("pdfUpload");
 const pdfList = document.getElementById("pdfList");
 
-// 🌀 عنصر اللودينج
+// 🌀 عنصر اللودينج + شريط التقدم
 const loadingSpinner = document.createElement("div");
 loadingSpinner.className = "loading-spinner hidden";
 loadingSpinner.innerHTML = `<div class="spinner"></div>`;
 document.body.appendChild(loadingSpinner);
+
+const progressContainer = document.createElement("div");
+progressContainer.style.width = "100%";
+progressContainer.style.background = "#ddd";
+progressContainer.style.borderRadius = "5px";
+progressContainer.style.marginTop = "10px";
+progressContainer.style.display = "none";
+
+const progressBar = document.createElement("div");
+progressBar.style.height = "10px";
+progressBar.style.width = "0%";
+progressBar.style.background = "#4caf50";
+progressBar.style.borderRadius = "5px";
+progressBar.style.transition = "width 0.3s";
+
+progressContainer.appendChild(progressBar);
+document.body.appendChild(progressContainer);
 
 // 🎯 التحقق من نوع المستخدم
 uploadSection.style.display = "none";
@@ -66,16 +83,36 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
-// 📤 رفع PDF
+// 📤 رفع PDF إلى GitHub + حفظ الرابط في Firestore مع شريط تقدم
 async function uploadPDF(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
+
+    // تحديث نسبة التحميل أثناء القراءة
+    reader.onprogress = (event) => {
+      if (event.lengthComputable) {
+        const percent = Math.round((event.loaded / event.total) * 100);
+        progressBar.style.width = percent + "%";
+      }
+    };
+
+    reader.onloadstart = () => {
+      progressBar.style.width = "0%";
+      progressContainer.style.display = "block";
+    };
+
+    reader.onloadend = () => {
+      progressBar.style.width = "100%";
+      setTimeout(() => {
+        progressContainer.style.display = "none";
+      }, 800);
+    };
+
     reader.onload = async () => {
       const content = reader.result.split(",")[1];
-      const fileUrl = `${apiUrl}/${encodeURIComponent(file.name)}`;
 
       try {
-        const res = await fetch(fileUrl, {
+        const res = await fetch(`${apiUrl}/${encodeURIComponent(file.name)}`, {
           method: "PUT",
           headers: {
             Authorization: `token ${token}`,
@@ -88,7 +125,17 @@ async function uploadPDF(file) {
         });
 
         if (res.ok) {
-          resolve(await res.json());
+          const data = await res.json();
+          const fileUrl = `https://raw.githubusercontent.com/${repo}/main/${pdfPath}/${encodeURIComponent(file.name)}`;
+          
+          // حفظ في Firestore
+          await addDoc(collection(db, "books"), {
+            name: file.name,
+            url: fileUrl,
+            createdAt: serverTimestamp()
+          });
+
+          resolve(data);
         } else {
           reject(await res.json());
         }
@@ -96,6 +143,7 @@ async function uploadPDF(file) {
         reject(err);
       }
     };
+
     reader.readAsDataURL(file);
   });
 }
@@ -111,7 +159,7 @@ async function loadPDFs() {
     const div = document.createElement("div");
     div.className = "pdf-item";
     div.innerHTML = `
-      <a href="https://raw.githubusercontent.com/${repo}/main/${pdfPath}/${encodeURIComponent(data.name)}" target="_blank">${data.name}</a>
+      <a href="${data.url}" target="_blank">${data.name}</a>
       <span class="delete-btn" style="cursor:pointer;color:red;margin-left:10px;">❌</span>
     `;
 
@@ -121,14 +169,18 @@ async function loadPDFs() {
 
       try {
         // جلب SHA من GitHub
-        const fileUrl = `${apiUrl}/${encodeURIComponent(data.name)}`;
-        const checkRes = await fetch(fileUrl, {
+        const checkRes = await fetch(`${apiUrl}/${encodeURIComponent(data.name)}`, {
           headers: { Authorization: `token ${token}` }
         });
         const fileData = await checkRes.json();
 
+        if (!fileData.sha) {
+          alert("لم يتم العثور على الملف في GitHub.");
+          return;
+        }
+
         // حذف من GitHub
-        await fetch(fileUrl, {
+        await fetch(`${apiUrl}/${encodeURIComponent(data.name)}`, {
           method: "DELETE",
           headers: {
             Authorization: `token ${token}`,
@@ -167,10 +219,6 @@ uploadBtn.addEventListener("click", async () => {
   for (let file of pdfUpload.files) {
     try {
       await uploadPDF(file);
-      await addDoc(collection(db, "books"), {
-        name: file.name,
-        createdAt: serverTimestamp()
-      });
     } catch (err) {
       console.error("خطأ في رفع الملف:", err);
     }
