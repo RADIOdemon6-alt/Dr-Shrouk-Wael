@@ -44,14 +44,22 @@ loadingSpinner.innerHTML = `<div class="spinner"></div>`;
 document.body.appendChild(loadingSpinner);
 
 // 🎯 عرض أو إخفاء أزرار الرفع حسب نوع المستخدم
+import { getDoc, doc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
 onAuthStateChanged(auth, async (user) => {
   if (user) {
-    const email = user.email || "";
-    if (email.endsWith("@chemapp.com") && localStorage.getItem("teacherPass") === "dr-shrouk-wael") {
+    const uid = user.uid;
+    const teacherRef = doc(db, "teachers", uid);
+    const teacherSnap = await getDoc(teacherRef);
+
+    if (teacherSnap.exists()) {
+      // المستخدم معلم
       uploadSection.style.display = "block";
     } else {
+      // المستخدم طالب
       uploadSection.style.display = "none";
     }
+
     loadPDFs();
   } else {
     window.location.href = "https://dr-shrouk-wael.vercel.app/";
