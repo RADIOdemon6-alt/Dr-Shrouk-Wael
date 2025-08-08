@@ -1,3 +1,4 @@
+// 📌 إعداد Firebase
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
 import {
   getFirestore,
@@ -14,7 +15,6 @@ import {
   onAuthStateChanged
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
-// 📌 إعداد Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBSqV0VQGR3048_bhhDx7NYboe2jaYc85Y",
   authDomain: "dr-shrouk-wael.firebaseapp.com",
@@ -29,19 +29,20 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// 📌 إعداد GitHub للـ PDF
+// 📌 إعداد GitHub
 const owner = "RADIOdemon6-alt";
-const repo = "Dr-Shrouk-Wael-storage-"; 
-const pdfPath = "storage"; 
+const repo = "Dr-Shrouk-Wael-storage-";
+const pdfPath = "storage";
 const token = "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";
 const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${pdfPath}`;
+
 // 📌 عناصر الواجهة
 const uploadSection = document.querySelector(".upload-section");
 const uploadBtn = document.getElementById("uploadBtn");
 const pdfUpload = document.getElementById("pdfUpload");
 const pdfList = document.getElementById("pdfList");
 
-// 🌀 عنصر اللودينج + شريط التقدم
+// 🌀 اللودينج + شريط التقدم
 const loadingSpinner = document.createElement("div");
 loadingSpinner.className = "loading-spinner hidden";
 loadingSpinner.innerHTML = `<div class="spinner"></div>`;
@@ -83,7 +84,7 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
-// 📤 رفع PDF إلى GitHub + حفظ الرابط في Firestore مع شريط تقدم
+// 📤 رفع PDF إلى GitHub + حفظ الرابط
 async function uploadPDF(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -105,7 +106,7 @@ async function uploadPDF(file) {
       const filePath = `${pdfPath}/${encodeURIComponent(file.name)}`;
 
       try {
-        const res = await fetch(`https://api.github.com/repos/${repo}/contents/${filePath}`, {
+        const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`, {
           method: "PUT",
           headers: {
             Authorization: `token ${token}`,
@@ -118,7 +119,7 @@ async function uploadPDF(file) {
         });
 
         if (res.ok) {
-          const fileUrl = `https://raw.githubusercontent.com/${repo}/main/${pdfPath}/${encodeURIComponent(file.name)}`;
+          const fileUrl = `https://raw.githubusercontent.com/${owner}/${repo}/main/${pdfPath}/${encodeURIComponent(file.name)}`;
           await addDoc(collection(db, "books"), {
             name: file.name,
             url: fileUrl,
@@ -143,7 +144,7 @@ async function uploadPDF(file) {
   });
 }
 
-// 📥 عرض الـ PDF مع زر ❌ للحذف
+// 📥 عرض الـ PDF مع زر الحذف
 async function loadPDFs() {
   loadingSpinner.classList.remove("hidden");
   pdfList.innerHTML = "";
@@ -164,7 +165,7 @@ async function loadPDFs() {
 
       try {
         const filePath = `${pdfPath}/${encodeURIComponent(data.name)}`;
-        const checkRes = await fetch(`https://api.github.com/repos/${repo}/contents/${filePath}`, {
+        const checkRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`, {
           headers: { Authorization: `token ${token}` }
         });
         const fileData = await checkRes.json();
@@ -175,7 +176,7 @@ async function loadPDFs() {
         }
 
         // حذف من GitHub
-        await fetch(`https://api.github.com/repos/${repo}/contents/${filePath}`, {
+        await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`, {
           method: "DELETE",
           headers: {
             Authorization: `token ${token}`,
@@ -202,7 +203,7 @@ async function loadPDFs() {
   loadingSpinner.classList.add("hidden");
 }
 
-// 📌 عند الضغط على زر الرفع
+// 📌 زر رفع الملفات
 uploadBtn.addEventListener("click", async () => {
   if (!pdfUpload.files.length) {
     alert("يرجى اختيار ملف PDF أولاً");
