@@ -37,16 +37,11 @@ onAuthStateChanged(auth, async (user) => {
     const teacherRef = doc(db, "teachers", user.uid);
     const teacherSnap = await getDoc(teacherRef);
 
-    if (teacherSnap.exists()) {
-      isTeacher = true;
-      uploadSection.style.display = "block";
-    } else {
-      isTeacher = false;
-      uploadSection.style.display = "none";
-    }
+    isTeacher = teacherSnap.exists();
+    uploadSection.style.display = isTeacher ? "block" : "none";
     loadPDFs();
   } else {
-    window.location.href = "https://dr-shrouk-wael.vercel.app/";
+    window.location.href = "/";
   }
 });
 
@@ -57,21 +52,19 @@ async function uploadPDFtoGoFile(file) {
   loadingSpinner.classList.remove("hidden");
 
   try {
-    // 1. الحصول على سيرفر GoFile
+    // الحصول على سيرفر GoFile
     const serverRes = await fetch("https://api.gofile.io/getServer");
     const serverData = await serverRes.json();
-    if (serverData.status !== "ok") throw new Error("تعذر الحصول على السيرفر");
+    if (serverData.status !== "ok") throw new Error(`تعذر الحصول على السيرفر: ${serverData.status}`);
 
     const server = serverData.data.server;
-
-    // 2. رفع الملف
     const formData = new FormData();
     formData.append("file", file);
 
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", `https://${server}.gofile.io/uploadFile`);
-
     return await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", `https://${server}.gofile.io/uploadFile`);
+
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable) {
           const percent = Math.round((event.loaded / event.total) * 100);
@@ -92,25 +85,29 @@ async function uploadPDFtoGoFile(file) {
             });
             resolve(true);
           } else {
-            reject(data);
+            reject(`خطأ من السيرفر: ${data.status} - ${data?.data?.error || "غير معروف"}`);
           }
         } catch (err) {
-          reject(err);
+          reject(`تعذر قراءة استجابة السيرفر: ${err.message}`);
         } finally {
-          setTimeout(() => {
-            progressContainer.style.display = "none";
-          }, 800);
+          progressContainer.style.display = "none";
           loadingSpinner.classList.add("hidden");
         }
       };
 
-      xhr.onerror = () => reject("خطأ في الاتصال بالسيرفر");
+      xhr.onerror = () => {
+        progressContainer.style.display = "none";
+        loadingSpinner.classList.add("hidden");
+        reject("خطأ في الاتصال بالسيرفر");
+      };
+
       xhr.send(formData);
     });
 
   } catch (err) {
-    console.error(err);
-    alert("حدث خطأ أثناء رفع الملف");
+    progressContainer.style.display = "none";
+    loadingSpinner.classList.add("hidden");
+    alert(`❌ خطأ في رفع الملف: ${err}`);
   }
 }
 
@@ -118,8 +115,8 @@ async function uploadPDFtoGoFile(file) {
 async function loadPDFs() {
   loadingSpinner.classList.remove("hidden");
   pdfList.innerHTML = "";
-  const querySnapshot = await getDocs(collection(db, "books"));
 
+  const querySnapshot = await getDocs(collection(db, "books"));
   querySnapshot.forEach((docSnap) => {
     const data = docSnap.data();
     const div = document.createElement("div");
@@ -132,8 +129,12 @@ async function loadPDFs() {
     if (isTeacher) {
       div.querySelector(".delete-btn").onclick = async () => {
         if (!confirm(`هل تريد حذف ${data.name}؟`)) return;
-        await deleteDoc(doc(db, "books", docSnap.id));
-        loadPDFs();
+        try {
+          await deleteDoc(doc(db, "books", docSnap.id));
+          loadPDFs();
+        } catch (err) {
+          alert(`❌ خطأ في الحذف: ${err.message}`);
+        }
       };
     }
 
@@ -145,13 +146,21 @@ async function loadPDFs() {
 
 // ===== رفع عند الضغط =====
 uploadBtn.addEventListener("click", async () => {
+  if (!isTeacher) {
+    alert("❌ مسموح بالرفع للمعلمين فقط");
+    return;
+  }
+
   if (!pdfUpload.files.length) {
     alert("يرجى اختيار ملف PDF أولاً");
     return;
   }
 
   for (let file of pdfUpload.files) {
-    await uploadPDFtoGoFile(file);
+    const result = await uploadPDFtoGoFile(file);
+    if (!result) {
+      console.warn(`فشل رفع الملف: ${file.name}`);
+    }
   }
 
   pdfUpload.value = "";
