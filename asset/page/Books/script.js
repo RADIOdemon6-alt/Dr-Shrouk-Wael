@@ -33,7 +33,7 @@ const auth = getAuth(app);
 const owner = "RADIOdemon6-alt";
 const repo = "Dr-Shrouk-Wael-storage-";
 const pdfPath = "storage";
-const token = "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"; // ضع التوكين
+const token = "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"; // التوكين
 
 // ===== عناصر الواجهة =====
 const uploadSection = document.querySelector(".upload-section");
@@ -44,40 +44,47 @@ const pdfList = document.getElementById("pdfList");
 // ===== اللودينج (Spinner) =====
 const loadingSpinner = document.createElement("div");
 loadingSpinner.className = "loading-spinner hidden";
-loadingSpinner.innerHTML = `<div class="spinner" style="
-  border: 6px solid #f3f3f3;
-  border-top: 6px solid #3498db;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;">
-</div>`;
+loadingSpinner.innerHTML = `<div class="spinner"></div>`;
 document.body.appendChild(loadingSpinner);
 
+// ===== CSS للـ Spinner & Progress Bar =====
 const style = document.createElement("style");
 style.innerHTML = `
 .hidden { display: none; }
+.spinner {
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #3498db;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
-}`;
+}
+#progressContainer {
+  width: 100%;
+  background: #ddd;
+  border-radius: 5px;
+  margin-top: 10px;
+  display: none;
+}
+#progressBar {
+  height: 10px;
+  width: 0%;
+  background: #4caf50;
+  border-radius: 5px;
+  transition: width 0.3s;
+}
+`;
 document.head.appendChild(style);
 
 // ===== شريط التقدم =====
 const progressContainer = document.createElement("div");
-progressContainer.style.width = "100%";
-progressContainer.style.background = "#ddd";
-progressContainer.style.borderRadius = "5px";
-progressContainer.style.marginTop = "10px";
-progressContainer.style.display = "none";
-
+progressContainer.id = "progressContainer";
 const progressBar = document.createElement("div");
-progressBar.style.height = "10px";
-progressBar.style.width = "0%";
-progressBar.style.background = "#4caf50";
-progressBar.style.borderRadius = "5px";
-progressBar.style.transition = "width 0.3s";
-
+progressBar.id = "progressBar";
 progressContainer.appendChild(progressBar);
 document.body.appendChild(progressContainer);
 
