@@ -21,7 +21,6 @@ const userNameEl = document.getElementById("userName");
 const userNumberEl = document.getElementById("userNumber");
 const userClassEl = document.getElementById("userClass");
 const userRoleEl = document.getElementById("userRole");
-const userUIDEl = document.getElementById("userUID");
 
 const studentsContainer = document.getElementById("studentsContainer");
 const showStudentsBtn = document.querySelector(".show-students-btn");
@@ -38,11 +37,10 @@ function callTeacher() {
   window.location.href = "tel:+201559002189";
 }
 
-// نخفي زر عرض الطلاب افتراضياً
-showStudentsBtn.style.display = "none";
+showStudentsBtn.style.display = "none"; // نخفي الزر تلقائي
 
-// تعريف الدالة fetchStudents في النطاق العام (لتُستخدم في HTML onclick أو بطريقة أخرى)
-window.fetchStudents = async function() {
+// عرض الطلاب فقط لو معلم
+async function fetchStudents() {
   if (currentUserRole !== "teacher") {
     alert("هذه الميزة متاحة فقط للمعلمين.");
     return;
@@ -72,11 +70,10 @@ window.fetchStudents = async function() {
     }
 
     studentsContainer.innerHTML = allStudents.map(student => `
-      <div class="student-card" style="background: rgba(192,132,252,0.2); margin-bottom: 12px; padding: 10px; border-radius: 8px;">
+      <div class="student-card">
         <strong>الاسم:</strong> ${student.name}<br>
         <strong>الرقم:</strong> ${student.phone}<br>
         <strong>الصف:</strong> ${student.grade}<br>
-        <strong>UID:</strong> ${student.id}
       </div>
     `).join("");
 
@@ -84,20 +81,34 @@ window.fetchStudents = async function() {
     console.error("خطأ في جلب الطلاب:", error);
     studentsContainer.innerHTML = "<p>حدث خطأ أثناء تحميل الطلاب.</p>";
   }
-};
+}
 
-// تتبع حالة الدخول للمستخدم
+// ربط الزر بالوظيفة
+if(showStudentsBtn) {
+  showStudentsBtn.addEventListener("click", fetchStudents);
+}
+
+// زر مطور الموقع (نص يتحول لزر رابط)
+const devTag = document.querySelector('.developer-tag');
+if (devTag) {
+  devTag.style.cursor = 'pointer';
+  devTag.style.color = '#FFD700'; // لون ذهبي
+  devTag.addEventListener('click', () => {
+    window.open('https://your-website-link.com', '_blank'); // غير الرابط حسب المطلوب
+  });
+}
+
+// عند تغيير حالة الدخول (الدخول أو الخروج)
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     alert("لم يتم تسجيل الدخول! يرجى تسجيل الدخول أولاً.");
-    window.location.href = "../login.html"; // عدل المسار حسب ملف تسجيل الدخول عندك
+    window.location.href = "../login.html"; // عدل الرابط حسب الحاجة
     return;
   }
 
   currentUserUID = user.uid;
-  userUIDEl.textContent = currentUserUID;
 
-  // جلب بيانات المعلم
+  // محاولة جلب بيانات المعلم أولاً
   const teacherRef = doc(db, `teachers/${currentUserUID}`);
   const teacherSnap = await getDoc(teacherRef);
 
@@ -108,11 +119,11 @@ onAuthStateChanged(auth, async (user) => {
     userClassEl.textContent = "-";
     userRoleEl.textContent = "معلم";
     currentUserRole = "teacher";
-    showStudentsBtn.style.display = "inline-block"; // إظهار زر عرض الطلاب للمعلمين
+    showStudentsBtn.style.display = "inline-block";
     return;
   }
 
-  // جلب بيانات الطالب
+  // لو مش معلم، نبحث بين الطلاب في الصفوف
   const grades = ["1", "2", "3"];
   let foundStudent = false;
 
@@ -127,7 +138,7 @@ onAuthStateChanged(auth, async (user) => {
       userRoleEl.textContent = "طالب";
       currentUserRole = "student";
       currentUserGrade = grade;
-      showStudentsBtn.style.display = "none"; // إخفاء زر عرض الطلاب للطلاب
+      showStudentsBtn.style.display = "none";
       foundStudent = true;
       break;
     }
