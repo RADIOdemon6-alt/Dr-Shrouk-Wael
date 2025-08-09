@@ -213,6 +213,8 @@ body {
 .navigation ul {
   display: flex;
   width: 350px;
+  padding: 0;
+  margin: 0;
 }
 
 .navigation ul li {
@@ -232,12 +234,17 @@ body {
   width: 100%;
   text-align: center;
   font-weight: 600;
+  color: #00FFF7;
+  text-decoration: none;
+}
+
+.navigation ul li.active a {
+  color: #C084FC;
 }
 
 .navigation ul li a .icon {
   line-height: 75px;
   font-size: 1.5em;
-  color: #00FFF7;
   transition: 0.4s ease;
 }
 
@@ -248,11 +255,11 @@ body {
 
 .navigation ul li a .text {
   position: absolute;
-  color: #00FFF7;
   font-size: 0.75em;
   opacity: 0;
   transform: translateY(20px);
   transition: 0.4s;
+  color: #00FFF7;
 }
 
 .navigation ul li.active a .text {
@@ -305,4 +312,4 @@ body {
 }
 .navigation ul li:nth-child(5).active ~ .indicator {
   transform: translateX(calc(-70px * 4));
-}
+    }
