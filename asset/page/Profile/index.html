@@ -5,36 +5,44 @@
   <title>بروفايل المستخدم - DR-SHROUK</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="style.css" />
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 </head>
 <body>
   <div class="container" style="display:flex; flex-wrap: wrap; gap: 30px; justify-content: center; padding: 20px;">
 
     <!-- قسم البروفايل 45% -->
-    <section class="profile-section" style="flex: 0 0 45%; min-width: 320px; background: rgba(255,255,255,0.05); border-radius: 15px; padding: 20px; box-shadow: 0 0 20px rgba(192,132,252,0.4);">
-      <div class="profile-pic" style="width: 140px; height: 140px; border-radius: 50%; overflow: hidden; border: 3px solid #C084FC; box-shadow: 0 0 20px rgba(192, 132, 252, 0.7); margin-left: auto;">
-        <img src="/asset/icons/dr-shrouk.jpg" alt="صورة المستخدم" style="width: 100%; height: 100%; object-fit: cover;" />
-      </div>
+    <section class="profile-section" style="flex: 0 0 45%; min-width: 320px;">
+      <div class="profile-container">
+        <div class="profile-pic">
+          <img src="/asset/icons/dr-shrouk.jpg" alt="صورة المستخدم" />
+        </div>
 
-      <div class="contact-buttons" style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px;">
-        <button class="contact-btn whatsapp-btn" onclick="openWhatsApp()" style="display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #00FFF7, #C084FC); color: black; font-weight: bold; padding: 10px 18px; border-radius: 25px; cursor: pointer; border: none; box-shadow: 0 0 10px rgba(0,255,247,0.4), 0 0 20px rgba(192,132,252,0.4);">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#25D366" viewBox="0 0 24 24"><path d="M20.52 3.48A11.88 11.88 0 0 0 12 0C5.4 0 0 5.4 0 12c0 2.12.54 4.08 1.48 5.8L0 24l6.4-1.68A11.85 11.85 0 0 0 12 24c6.6 0 12-5.4 12-12 0-3.19-1.26-6.21-3.48-8.52zM12 21.6c-2.04 0-4.02-.54-5.76-1.56l-.4-.24-3.8 1 1-3.8-.24-.4A9.63 9.63 0 0 1 2.4 12c0-5.28 4.32-9.6 9.6-9.6 2.56 0 4.96 1 6.8 2.8A9.56 9.56 0 0 1 21.6 12c0 5.28-4.32 9.6-9.6 9.6zm5.2-7.28c-.28-.14-1.64-.8-1.88-.9-.24-.08-.4-.14-.56.14-.16.28-.64.9-.8 1.08-.16.18-.3.2-.56.06-.28-.14-1.18-.44-2.24-1.4-.82-.72-1.36-1.6-1.52-1.88-.16-.28-.02-.42.12-.56.12-.12.28-.3.42-.44.14-.16.18-.28.28-.48.1-.2.04-.36-.02-.5-.06-.14-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.42h-.48c-.16 0-.42.06-.64.28-.22.22-.84.82-.84 2 0 1.18.86 2.32 1 2.48.14.16 1.68 2.58 4.08 3.6.56.24 1 .38 1.34.5.56.18 1.08.16 1.48.1.44-.06 1.34-.54 1.52-1.06.18-.52.18-.96.12-1.06-.06-.1-.22-.16-.5-.28z"/></svg>
-          تواصل واتساب
-        </button>
-        <button class="contact-btn phone-btn" onclick="callTeacher()" style="display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #00FFF7, #C084FC); color: black; font-weight: bold; padding: 10px 18px; border-radius: 25px; cursor: pointer; border: none; box-shadow: 0 0 10px rgba(0,255,247,0.4), 0 0 20px rgba(192,132,252,0.4);">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#4CAF50" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.86 19.86 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13 1.21.4 2.39.8 3.5a2 2 0 0 1-.45 2.11L9.91 10a16 16 0 0 0 6 6l.68-.68a2 2 0 0 1 2.11-.45c1.11.4 2.29.67 3.5.8a2 2 0 0 1 1.72 2z"/></svg>
-          اتصل بالمعلم
-        </button>
-      </div>
+        <div style="display:flex; flex-direction: column; justify-content: space-between; flex:1;">
+          <div class="contact-buttons">
+            <button class="contact-button whatsapp-btn" onclick="openWhatsApp()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#25D366" viewBox="0 0 24 24">
+                <path d="M20.52 3.48A11.88 11.88 0 0 0 12 0C5.4 0 0 5.4 0 12c0 2.12.54 4.08 1.48 5.8L0 24l6.4-1.68A11.85 11.85 0 0 0 12 24c6.6 0 12-5.4 12-12 0-3.19-1.26-6.21-3.48-8.52zM12 21.6c-2.04 0-4.02-.54-5.76-1.56l-.4-.24-3.8 1 1-3.8-.24-.4A9.63 9.63 0 0 1 2.4 12c0-5.28 4.32-9.6 9.6-9.6 2.56 0 4.96 1 6.8 2.8A9.56 9.56 0 0 1 21.6 12c0 5.28-4.32 9.6-9.6 9.6zm5.2-7.28c-.28-.14-1.64-.8-1.88-.9-.24-.08-.4-.14-.56.14-.16.28-.64.9-.8 1.08-.16.18-.3.2-.56.06-.28-.14-1.18-.44-2.24-1.4-.82-.72-1.36-1.6-1.52-1.88-.16-.28-.02-.42.12-.56.12-.12.28-.3.42-.44.14-.16.18-.28.28-.48.1-.2.04-.36-.02-.5-.06-.14-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.42h-.48c-.16 0-.42.06-.64.28-.22.22-.84.82-.84 2 0 1.18.86 2.32 1 2.48.14.16 1.68 2.58 4.08 3.6.56.24 1 .38 1.34.5.56.18 1.08.16 1.48.1.44-.06 1.34-.54 1.52-1.06.18-.52.18-.96.12-1.06-.06-.1-.22-.16-.5-.28z"/>
+              </svg>
+              تواصل واتساب
+            </button>
+            <button class="contact-button phone-btn" onclick="callTeacher()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#4CAF50" viewBox="0 0 24 24">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.86 19.86 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13 1.21.4 2.39.8 3.5a2 2 0 0 1-.45 2.11L9.91 10a16 16 0 0 0 6 6l.68-.68a2 2 0 0 1 2.11-.45c1.11.4 2.29.67 3.5.8a2 2 0 0 1 1.72 2z"/>
+              </svg>
+              اتصل بالمعلم
+            </button>
+          </div>
 
-      <div class="developer-tag" style="margin-top: 25px; font-size: 18px; font-weight: 700; color: gold; text-align: center; text-shadow: 0 0 15px gold;">
-        +20 01063808608 مطور الموقع
+          <div class="developer-contact" style="margin-top: auto; font-size: 18px; font-weight: 700; color: gold; text-align: center; text-shadow: 0 0 15px gold;">
+            +20 01063808608 مطور الموقع
+          </div>
+        </div>
       </div>
 
       <form id="studentsForm" style="margin-top: 30px;">
-        <button type="button" class="show-students-btn" onclick="fetchStudents()" style="background: #C084FC; padding: 12px 25px; border-radius: 30px; font-weight: 700; font-size: 16px; cursor: pointer; color: white; box-shadow: 0 0 20px rgba(192, 132, 252, 0.8); border: none;">
-          عرض الطلاب
-        </button>
-        <div id="studentsContainer" class="students-container" style="margin-top: 20px;"></div>
+        <button type="button" class="show-students-btn" onclick="fetchStudents()">عرض الطلاب</button>
+        <div id="studentsContainer" class="students-list" style="margin-top: 20px;"></div>
       </form>
     </section>
 
@@ -54,20 +62,24 @@
         <strong>الدور:</strong> <span id="userRole">جارٍ التحميل...</span>
       </div>
     </section>
-<button id="logoutBtn" style="
-  margin-top: 20px;
-  background: #C084FC;
-  padding: 12px 25px;
-  border-radius: 30px;
-  font-weight: 700;
-  font-size: 16px;
-  cursor: pointer;
-  color: white;
-  box-shadow: 0 0 20px rgba(192, 132, 252, 0.8);
-  border: none;
-  transition: background 0.3s ease;
-">تسجيل خروج</button>
-    <div class="navigation">
+  </div>
+
+  <button id="logoutBtn" style="
+    margin: 20px auto;
+    display: block;
+    background: #C084FC;
+    padding: 12px 25px;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    color: white;
+    box-shadow: 0 0 20px rgba(192, 132, 252, 0.8);
+    border: none;
+    transition: background 0.3s ease;
+  ">تسجيل خروج</button>
+
+  <div class="navigation">
     <ul>
       <li class="list active">
         <a href="https://dr-shrouk-wael.vercel.app/asset/page/home/index.html#">
@@ -120,4 +132,4 @@
 
   <script type="module" src="script.js"></script>
 </body>
-</html>
+  </html>
