@@ -48,12 +48,12 @@ body {
   object-fit: cover;
 }
 
-/* ====   معلومات البروفايل   ==== */
+/* ===== معلومات البروفايل (مربعات) ===== */
 .profile-info {
   flex: 1;
   display: flex;
   flex-wrap: wrap;
-  gap: 15px;
+  gap: 20px;
   justify-content: flex-start;
   align-items: stretch;
 }
@@ -62,18 +62,18 @@ body {
   background: rgba(192, 132, 252, 0.15);
   box-shadow: 0 0 15px rgba(192, 132, 252, 0.6);
   border-radius: 12px;
-  padding: 12px 20px;
+  padding: 15px 25px;
   min-width: 140px;
   flex: 1 1 140px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   color: #E0C3FC;
   font-weight: 600;
   font-size: 16px;
   text-align: center;
-  transition: background 0.3s ease;
   cursor: default;
+  transition: background 0.3s ease;
 }
 
 .profile-info span:hover {
@@ -81,7 +81,7 @@ body {
 }
 
 .profile-info strong {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 900;
   color: #C084FC;
   text-shadow:
