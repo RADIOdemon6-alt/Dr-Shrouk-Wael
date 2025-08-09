@@ -6,6 +6,7 @@ import {
   setDoc,
   getDocs,
   deleteDoc,
+  getDoc,
   serverTimestamp
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
@@ -28,26 +29,27 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-const testContainer = document.getElementById("testContainer");
-const addBtn = document.getElementById("addTestBtn");
-const addFormContainer = document.getElementById("addTestForm");
-
 let currentUser = null;
 let isTeacher = false;
 
+// جلب دور المستخدم (معلم أو طالب)
 async function fetchUserRole(uid) {
   try {
-    const userDoc = await getDoc(doc(db, "Users", uid));
+    const userDoc = await getDoc(doc(db, "teachers", uid));  // بدل "Users" صرنا نجيب من "teachers"
     if (userDoc.exists()) {
-      const data = userDoc.data();
-      return data.role === "teacher";
+      // بما إنه موجود في "teachers" معناها معلم
+      return true;
     }
-    return false;
+    return false; // لو مش موجود معناه مش معلم
   } catch (e) {
-    console.error("Error fetching role:", e);
+    console.error("خطأ في جلب دور المستخدم:", e);
     return false;
   }
 }
+// تفعيل/إخفاء نموذج الإضافة
+const addBtn = document.getElementById("addTestBtn");
+const addFormContainer = document.getElementById("addTestForm");
+const testContainer = document.getElementById("testContainer");
 
 function toggleAddForm(show) {
   if (show) {
@@ -59,16 +61,17 @@ function toggleAddForm(show) {
   }
 }
 
+// إنشاء بطاقة سؤال مع خيارات وإظهار الإجابة الصحيحة فقط للمعلم
 function createTestCard(testDoc) {
   const data = testDoc.data();
   const card = document.createElement("div");
   card.className = "test-card";
 
-  // السؤال: نص أو صورة (لو في صورة رابطها موجود في data.questionImage)
+  // سؤال نصي أو صورة
   if (data.questionImage) {
     const img = document.createElement("img");
     img.src = data.questionImage;
-    img.alt = "سؤال صورة";
+    img.alt = "صورة سؤال";
     img.className = "question-image";
     card.appendChild(img);
   } else {
@@ -78,6 +81,7 @@ function createTestCard(testDoc) {
     card.appendChild(questionEl);
   }
 
+  // خيارات
   const options = [...data.incorrectAnswers, data.correctAnswer];
   options.sort(() => Math.random() - 0.5);
 
@@ -85,48 +89,36 @@ function createTestCard(testDoc) {
   optionsContainer.className = "options-container";
 
   options.forEach(opt => {
-    const optBtn = document.createElement("button");
-    optBtn.className = "option-btn";
-    optBtn.textContent = opt;
+    const btn = document.createElement("button");
+    btn.className = "option-btn";
+    btn.textContent = opt;
 
-    if (opt === data.correctAnswer) {
-      optBtn.dataset.correct = "true";
+    // إذا المعلم فقط يظهر الإجابة الصحيحة بخلفية خضراء
+    if (isTeacher && opt === data.correctAnswer) {
+      btn.dataset.correct = "true";
+      btn.style.backgroundColor = "#28a745";
     }
 
-    optBtn.addEventListener("click", () => {
+    btn.addEventListener("click", () => {
+      // تعطيل كل الأزرار بعد اختيار إجابة
       optionsContainer.querySelectorAll("button").forEach(b => b.disabled = true);
 
-      if (optBtn.dataset.correct) {
-        optBtn.style.backgroundColor = "#28a745"; // أخضر
-      } else {
-        optBtn.style.backgroundColor = "#dc3545"; // أحمر
-      }
-
-      if (isTeacher) {
-        optionsContainer.querySelectorAll("button").forEach(btn => {
-          if (btn.dataset.correct) btn.style.backgroundColor = "#28a745";
-        });
+      // فقط إذا الطالب هو الذي يختار، نظهر الأخضر أو الأحمر بعد الاختيار
+      if (!isTeacher) {
+        if (opt === data.correctAnswer) {
+          btn.style.backgroundColor = "#28a745"; // أخضر
+        } else {
+          btn.style.backgroundColor = "#dc3545"; // أحمر
+        }
       }
     });
 
-    // إذا المستخدم مش معلم، لا تظهر الإجابة الصحيحة من البداية
-    if (!isTeacher) {
-      optBtn.addEventListener("mouseenter", () => {
-        // لا نكشف شيء عند المرور
-      });
-    } else {
-      // المعلم يرى الإجابة الصحيحة مباشرة (لون أخضر)
-      if (optBtn.dataset.correct) {
-        optBtn.style.backgroundColor = "#28a745";
-      }
-    }
-
-    optionsContainer.appendChild(optBtn);
+    optionsContainer.appendChild(btn);
   });
 
   card.appendChild(optionsContainer);
 
-  // زر حذف فقط للمعلم
+  // زر حذف يظهر فقط للمعلم
   if (isTeacher) {
     const delBtn = document.createElement("button");
     delBtn.className = "delete-test-btn";
@@ -143,16 +135,19 @@ function createTestCard(testDoc) {
   return card;
 }
 
+// تحميل وعرض الاختبارات
 async function loadTests() {
   testContainer.innerHTML = "جارٍ تحميل الاختبارات...";
   try {
-    const querySnapshot = await getDocs(collection(db, "Tests"));
+    const snapshot = await getDocs(collection(db, "Tests"));
     testContainer.innerHTML = "";
-    if (querySnapshot.empty) {
+
+    if (snapshot.empty) {
       testContainer.textContent = "لا يوجد اختبارات حتى الآن.";
       return;
     }
-    querySnapshot.forEach(docSnap => {
+
+    snapshot.forEach(docSnap => {
       const card = createTestCard(docSnap);
       testContainer.appendChild(card);
     });
@@ -162,6 +157,7 @@ async function loadTests() {
   }
 }
 
+// إضافة اختبار جديد
 async function addTest(e) {
   e.preventDefault();
 
@@ -200,8 +196,8 @@ async function addTest(e) {
   }
 }
 
-// مراقبة حالة الدخول وتحديد دور المعلم
-onAuthStateChanged(auth, async (user) => {
+// مراقبة حالة تسجيل الدخول وجلب دور المستخدم
+onAuthStateChanged(auth, async user => {
   currentUser = user;
   if (user) {
     isTeacher = await fetchUserRole(user.uid);
@@ -214,6 +210,7 @@ onAuthStateChanged(auth, async (user) => {
   loadTests();
 });
 
+// التحكم بزر الإضافة
 addBtn.addEventListener("click", () => {
   if (addFormContainer.classList.contains("hidden")) {
     toggleAddForm(true);
@@ -222,4 +219,5 @@ addBtn.addEventListener("click", () => {
   }
 });
 
+// ربط حدث الإرسال للنموذج
 addFormContainer.addEventListener("submit", addTest);
