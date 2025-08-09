@@ -28,7 +28,18 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentUserUID = null;
   let currentUserRole = null; // "teacher" أو "student"
   let currentUserGrade = null;
+const auth = getAuth();
 
+document.getElementById("logoutBtn").addEventListener("click", async () => {
+  try {
+    await signOut(auth);
+    alert("تم تسجيل الخروج بنجاح");
+    // أعد التوجيه لصفحة تسجيل الدخول أو الرئيسية
+    window.location.href = "../path-to-login/login.html"; 
+  } catch (error) {
+    alert("حدث خطأ أثناء تسجيل الخروج: " + error.message);
+  }
+});
   // دوال أزرار التواصل
   function openWhatsApp() {
     window.open("https://wa.me/201559002189", "_blank");
