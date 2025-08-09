@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       await signOut(auth);
       alert("تم تسجيل الخروج بنجاح");
-      window.location.href = "../login.html"; // عدل حسب مسار صفحة تسجيل الدخول
+      window.location.href = "https://dr-shrouk-wael.vercel.app/"; // عدل حسب مسار صفحة تسجيل الدخول
     } catch (error) {
       alert("حدث خطأ أثناء تسجيل الخروج: " + error.message);
     }
