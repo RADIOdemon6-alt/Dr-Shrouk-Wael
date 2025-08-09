@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentUserGrade = null;
 
   // تسجيل الخروج
-  if(logoutBtn) {
+  if (logoutBtn) {
     logoutBtn.addEventListener("click", async () => {
       try {
         await signOut(auth);
@@ -107,7 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  if(showStudentsBtn) {
+  if (showStudentsBtn) {
     showStudentsBtn.addEventListener("click", fetchStudents);
   }
 
@@ -120,7 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     currentUserUID = user.uid;
-    if(userUIDEl) userUIDEl.textContent = currentUserUID;
+    if (userUIDEl) userUIDEl.textContent = currentUserUID;
 
     // جلب بيانات المعلم
     const teacherRef = doc(db, `teachers/${currentUserUID}`);
@@ -167,12 +167,23 @@ document.addEventListener("DOMContentLoaded", () => {
       if (showStudentsBtn) showStudentsBtn.style.display = "none";
     }
   });
-});
 
-// وظيفة لتفعيل ال active class في عناصر القائمة (إذا كانت موجودة)
-const list = document.querySelectorAll('.list');
-function activeLink() {
-  list.forEach((item) => item.classList.remove('active'));
-  this.classList.add('active');
-}
-list.forEach((item) => item.addEventListener('click', activeLink));
+  // تفعيل active class لعناصر القائمة إذا موجودة
+  const list = document.querySelectorAll('.list');
+  list.forEach(item => {
+    item.addEventListener('click', function (e) {
+      e.preventDefault(); // إذا كانت روابط تريد منع إعادة تحميل الصفحة
+      list.forEach(i => i.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  // أو بديل لتفعيل active لل navigation ul li لو تستخدمها
+  const navItems = document.querySelectorAll('.navigation ul li');
+  navItems.forEach(item => {
+    item.addEventListener('click', () => {
+      navItems.forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+    });
+  });
+});
