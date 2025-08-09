@@ -1,5 +1,5 @@
 const pdfFiles = [
-  { name: "ملخص-دكتور-شروق", file: "DR SHROUK.pdf" },
+  { name: "ملخص-دكتوره-شروق", file: "DR SHROUK.pdf" },
   { name: "كتاب-الكيمياء", file: "chemistry.pdf" }
 ];
 
