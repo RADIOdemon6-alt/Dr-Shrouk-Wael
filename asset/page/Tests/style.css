@@ -8,8 +8,8 @@
 }
 
 body {
-  background-color: #0B0D17;
-  color: #E0E0E0;
+  background: linear-gradient(135deg, #081c24, #0b2a3d);
+  color: #d0e8f2;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -22,18 +22,18 @@ body {
   width: 100%;
   max-width: 1100px;
   padding: 15px 25px;
-  background: rgba(255, 255, 255, 0.07);
+  background: rgba(13, 61, 98, 0.7);
   backdrop-filter: blur(10px);
   border-radius: 0 0 20px 20px;
-  box-shadow: 0 0 15px #00FFF7aa;
+  box-shadow: 0 0 20px #1ecbe1aa;
   margin-bottom: 30px;
 }
 
 .top-bar h1 {
   font-weight: 700;
   font-size: 28px;
-  color: #C084FC;
-  text-shadow: 0 0 8px #C084FCbb;
+  color: #1ecbe1;
+  text-shadow: 0 0 12px #1ecbe1cc;
 }
 
 /* ===== الحاوية الرئيسية ===== */
@@ -42,72 +42,81 @@ body {
   max-width: 1100px;
   width: 100%;
   gap: 25px;
-  direction: rtl; /* الحفاظ على RTL */
+  direction: rtl;
 }
 
 /* ===== جزء عرض الأسئلة ===== */
 .test-container {
   flex: 3;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(13, 61, 98, 0.85);
   border-radius: 20px;
   padding: 25px 30px;
-  box-shadow: 0 0 25px #00FFF7aa;
+  box-shadow: 0 0 25px #1ecbe1aa;
   max-height: 80vh;
   overflow-y: auto;
 }
 
 /* السؤال */
 .question-box {
-  background: #1A1D29;
-  padding: 18px 22px;
+  background: #013243;
+  border: 2px solid #1ecbe1;
+  box-shadow: 0 0 15px #1ecbe1aa;
+  padding: 20px 25px;
   border-radius: 15px;
-  box-shadow: 0 0 12px #C084FCaa;
-  margin-bottom: 25px;
+  margin-bottom: 30px;
 }
 
 .question-box p {
-  font-size: 20px;
-  font-weight: 600;
-  color: #C084FC;
-  text-shadow: 0 0 6px #C084FCbb;
+  font-weight: 700;
+  font-size: 22px;
+  color: #a0d8ef;
+  letter-spacing: 0.5px;
+  margin-bottom: 18px;
 }
 
 /* قائمة الخيارات */
 .options-list {
-  margin-top: 15px;
   display: flex;
-  flex-direction: column;
-  gap: 15px;
+  flex-wrap: wrap;
+  gap: 18px;
 }
 
 /* زر كل خيار */
 .option-btn {
-  background: #0B0D17;
-  border: 2px solid #00FFF7;
-  color: #00FFF7;
-  padding: 14px 20px;
+  flex: 1 1 calc(50% - 18px);
+  background: #05516f;
+  border: 2px solid #1ecbe1;
+  color: #a0d8ef;
+  padding: 14px 18px;
   font-size: 18px;
-  font-weight: 500;
-  border-radius: 12px;
+  font-weight: 600;
+  border-radius: 14px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  text-align: right;
-  box-shadow: 0 0 8px #00FFF7aa;
+  transition: background-color 0.4s ease, color 0.4s ease, box-shadow 0.4s ease;
+  box-shadow: 0 0 8px #1ecbe1aa;
+  text-align: center;
+  user-select: none;
 }
 
 .option-btn:hover {
-  background: #00FFF7;
-  color: #0B0D17;
-  box-shadow: 0 0 18px #00FFF7ff;
+  background-color: #1ecbe1;
+  color: #013243;
+  box-shadow: 0 0 25px #1ecbe1ff;
+}
+
+.option-btn:focus {
+  outline: none;
+  box-shadow: 0 0 28px 3px #67e1ff;
 }
 
 /* ===== جزء الشريط الجانبي (الفورم + زر الإضافة) ===== */
 .sidebar {
   flex: 1;
-  background: rgba(255, 255, 255, 0.06);
+  background: #013243;
+  border: 2px solid #1ecbe1;
+  box-shadow: 0 0 20px #1ecbe1bb;
   padding: 25px 20px;
   border-radius: 20px;
-  box-shadow: 0 0 25px #C084FCaa;
   height: fit-content;
   min-width: 300px;
   display: flex;
@@ -121,37 +130,37 @@ body {
   width: 60px;
   height: 60px;
   font-size: 36px;
-  background: linear-gradient(135deg, #C084FC, #00FFF7);
+  background: linear-gradient(135deg, #1ecbe1, #70e0ff);
   border: none;
   border-radius: 50%;
-  color: #0B0D17;
+  color: #013243;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 0 20px #C084FCcc;
+  box-shadow: 0 0 20px #70e0ffcc;
   transition: transform 0.3s ease;
 }
 
 .add-btn:hover {
   transform: rotate(90deg) scale(1.1);
-  box-shadow: 0 0 30px #00FFF7ff;
+  box-shadow: 0 0 30px #1ecbe1ff;
 }
 
 /* الفورم مخفي افتراضياً */
 .add-form {
   width: 100%;
-  background: #1A1D29;
+  background: #01465e;
+  border: 2px solid #70e0ff;
+  box-shadow: 0 0 25px #70e0ffcc;
   border-radius: 15px;
   padding: 20px 25px;
-  box-shadow: 0 0 20px #C084FCbb;
   display: flex;
   flex-direction: column;
   gap: 15px;
   transition: max-height 0.5s ease, opacity 0.4s ease;
-  max-height: 1000px; /* للعرض */
+  max-height: 1000px;
   opacity: 1;
 }
 
-/* اخفاء الفورم */
 .hidden {
   max-height: 0 !important;
   opacity: 0 !important;
@@ -161,17 +170,17 @@ body {
 
 /* عنوان الفورم */
 .add-form h3 {
-  color: #00FFF7;
+  color: #70e0ff;
   font-size: 22px;
   text-align: center;
-  text-shadow: 0 0 10px #00FFF7cc;
+  text-shadow: 0 0 10px #70e0ffcc;
   font-weight: 700;
 }
 
 /* تسميات الحقول */
 .add-form label {
   font-weight: 600;
-  color: #C084FC;
+  color: #70e0ff;
   font-size: 16px;
   margin-bottom: 6px;
   display: block;
@@ -183,40 +192,45 @@ body {
   width: 100%;
   padding: 12px 15px;
   border-radius: 12px;
-  border: 2px solid #00FFF7aa;
-  background: rgba(0, 255, 247, 0.1);
-  color: #E0E0E0;
+  border: 2px solid #1ecbe1;
+  background: #023d56;
+  color: #c0e8ff;
   font-size: 16px;
-  font-weight: 400;
+  font-weight: 500;
   resize: vertical;
   transition: border-color 0.3s ease;
 }
 
-.add-form textarea:focus,
-.add-form input[type="text"]:focus {
-  border-color: #C084FC;
-  outline: none;
-  box-shadow: 0 0 12px #C084FCbb;
+.add-form textarea::placeholder,
+.add-form input[type="text"]::placeholder {
+  color: #70e0ffaa;
 }
 
-/* زر الإضافة */
+.add-form textarea:focus,
+.add-form input[type="text"]:focus {
+  border-color: #70e0ff;
+  outline: none;
+  box-shadow: 0 0 12px #70e0ffcc;
+}
+
+/* زر الإضافة داخل الفورم */
 .submit-btn {
   margin-top: 10px;
-  background: linear-gradient(135deg, #C084FC, #00FFF7);
-  color: #0B0D17;
+  background: linear-gradient(135deg, #70e0ff, #1ecbe1);
+  color: #013243;
   font-size: 18px;
   font-weight: 700;
   padding: 15px 0;
   border: none;
   border-radius: 20px;
   cursor: pointer;
-  box-shadow: 0 0 20px #C084FCbb;
+  box-shadow: 0 0 30px #70e0ffdd;
   transition: all 0.3s ease;
 }
 
 .submit-btn:hover {
-  background: linear-gradient(135deg, #00FFF7, #C084FC);
-  box-shadow: 0 0 30px #00FFF7ff;
+  background: linear-gradient(135deg, #1ecbe1, #70e0ff);
+  box-shadow: 0 0 40px #1ecbe1ff;
 }
 
 /* Scrollbar for test container */
@@ -229,7 +243,7 @@ body {
 }
 
 .test-container::-webkit-scrollbar-thumb {
-  background: #00FFF7bb;
+  background: #1ecbe1bb;
   border-radius: 8px;
 }
 
@@ -243,4 +257,4 @@ body {
     max-width: 100%;
     width: 100%;
   }
-  }
+}
