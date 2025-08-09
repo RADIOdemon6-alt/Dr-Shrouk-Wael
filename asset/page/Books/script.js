@@ -39,7 +39,8 @@ async function createCard(pdf) {
   
   // اسم الكتاب
   const title = document.createElement("h3");
-  title.textContent = pdf.name;
+title.textContent = pdf.name;
+title.style.color = "black"; 
   title.style.marginBottom = "10px";
   title.style.textAlign = "center";
 
