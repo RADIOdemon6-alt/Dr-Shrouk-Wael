@@ -5,6 +5,8 @@
   <title>بروفايل المستخدم - DR-SHROUK</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="style.css" />
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 </head>
 <body>
   <div class="container" style="display:flex; flex-wrap: wrap; gap: 30px; justify-content: center; padding: 20px;">
@@ -31,7 +33,7 @@
       </div>
 
       <form id="studentsForm" style="margin-top: 30px;">
-        <button type="button" class="show-students-btn" onclick="fetchStudents()" style="background: #C084FC; padding: 12px 25px; border-radius: 30px; font-weight: 700; font-size: 16px; cursor: pointer; color: white; box-shadow: 0 0 20px rgba(192, 132, 252, 0.8); border: none;">
+        <button type="button" class="show-students-btn" style="background: #C084FC; padding: 12px 25px; border-radius: 30px; font-weight: 700; font-size: 16px; cursor: pointer; color: white; box-shadow: 0 0 20px rgba(192, 132, 252, 0.8); border: none;">
           عرض الطلاب
         </button>
         <div id="studentsContainer" class="students-container" style="margin-top: 20px;"></div>
@@ -54,57 +56,52 @@
         <strong>الدور:</strong> <span id="userRole">جارٍ التحميل...</span>
       </div>
       <div class="info-item" style="margin-bottom: 15px; font-weight: 600; font-size: 18px; color: #E0C3FC;">
-          </div>
+        <strong>UID:</strong> <span id="userUID">جارٍ التحميل...</span>
+      </div>
     </section>
-      <ul>
-      <li class="list active">
-        <a href="https://dr-shrouk-wael.vercel.app/asset/page/home/index.html#">
-          <span class="icon">
-            <ion-icon name="school-outline"></ion-icon>
-          </span>
-          <span class="text">الرئيسية</span>
-          <span class="circle"></span>
-        </a>
-      </li>
-      <li class="list">
-        <a href="https://dr-shrouk-wael.vercel.app/asset/page/Books/index.html#">
-          <span class="icon">
-            <ion-icon name="book-outline"></ion-icon>
-          </span>
-          <span class="text">الكتب</span>
-          <span class="circle"></span>
-        </a>
-      </li>
-      <li class="list">
-        <a href="https://dr-shrouk-wael.vercel.app/asset/page/News/index.html">
-          <span class="icon">
-            <ion-icon name="newspaper-outline"></ion-icon>
-          </span>
-          <span class="text">أخبار</span>
-          <span class="circle"></span>
-        </a>
-      </li>
-      <li class="list">
-        <a href="https://dr-shrouk-wael.vercel.app/asset/page/Profile/index.html">
-          <span class="icon">
-            <ion-icon name="person-outline"></ion-icon>
-          </span>
-          <span class="text">البروفايل</span>
-          <span class="circle"></span>
-        </a>
-      </li>
-      <li class="list">
-        <a href="#">
-          <span class="icon">
-            <ion-icon name="videocam-outline"></ion-icon>
-          </span>
-          <span class="text">فيديوهاتي</span>
-          <span class="circle"></span>
-        </a>
-      </li>
+
+    <!-- قائمة التنقل -->
+    <nav style="flex-basis: 100%; margin-top: 40px;">
+      <ul style="display: flex; gap: 20px; justify-content: center; list-style: none; padding: 0;">
+        <li class="list active">
+          <a href="https://dr-shrouk-wael.vercel.app/asset/page/home/index.html#">
+            <span class="icon"><ion-icon name="school-outline"></ion-icon></span>
+            <span class="text">الرئيسية</span>
+            <span class="circle"></span>
+          </a>
+        </li>
+        <li class="list">
+          <a href="https://dr-shrouk-wael.vercel.app/asset/page/Books/index.html#">
+            <span class="icon"><ion-icon name="book-outline"></ion-icon></span>
+            <span class="text">الكتب</span>
+            <span class="circle"></span>
+          </a>
+        </li>
+        <li class="list">
+          <a href="https://dr-shrouk-wael.vercel.app/asset/page/News/index.html">
+            <span class="icon"><ion-icon name="newspaper-outline"></ion-icon></span>
+            <span class="text">أخبار</span>
+            <span class="circle"></span>
+          </a>
+        </li>
+        <li class="list">
+          <a href="https://dr-shrouk-wael.vercel.app/asset/page/Profile/index.html">
+            <span class="icon"><ion-icon name="person-outline"></ion-icon></span>
+            <span class="text">البروفايل</span>
+            <span class="circle"></span>
+          </a>
+        </li>
+        <li class="list">
+          <a href="#">
+            <span class="icon"><ion-icon name="videocam-outline"></ion-icon></span>
+            <span class="text">فيديوهاتي</span>
+            <span class="circle"></span>
+          </a>
+        </li>
+      </ul>
       <div class="indicator"></div>
-    </ul>
-  </div>
+    </nav>
+
   </div>
 
   <script type="module" src="script.js"></script>
