@@ -8,7 +8,7 @@ const pdfFiles = [
 const pdfList = document.getElementById("pdfList");
 pdfList.style.display = "flex";
 pdfList.style.flexDirection = "column";
-pdfList.style.gap = "10px"; // فرق 10px بين الكتب
+pdfList.style.gap = "10px";
 
 const container = document.createElement("div");
 container.style.marginTop = "20px";
@@ -17,24 +17,20 @@ container.style.marginTop = "20px";
 const fileTitle = document.createElement("h2");
 fileTitle.style.textAlign = "center";
 fileTitle.style.margin = "3px 0";
-fileTitle.style.opacity = "0";
-fileTitle.style.transition = "opacity 0.4s ease, transform 0.4s ease";
+fileTitle.style.opacity = "1"; // دائمًا ظاهر
 
 // أيقونة الكتاب
 const pdfIcon = document.createElement("img");
 pdfIcon.style.width = "100%";
 pdfIcon.style.height = "auto";
 pdfIcon.style.display = "block";
-pdfIcon.style.opacity = "0";
-pdfIcon.style.transition = "opacity 0.4s ease, transform 0.4s ease";
+pdfIcon.style.opacity = "1";
 
 // iframe لعرض الكتاب
 const pdfViewer = document.createElement("iframe");
 pdfViewer.width = "100%";
 pdfViewer.height = "600px";
 pdfViewer.style.border = "none";
-pdfViewer.style.opacity = "0";
-pdfViewer.style.transition = "opacity 0.4s ease, transform 0.4s ease";
 
 // إضافة العناصر للكونتينر
 container.appendChild(fileTitle);
@@ -42,29 +38,11 @@ container.appendChild(pdfIcon);
 container.appendChild(pdfViewer);
 document.body.insertBefore(container, document.getElementById("elementTableBtn"));
 
-// دالة عرض الكتاب مع أنيميشن
+// دالة عرض الكتاب
 function displayBook(pdf) {
-  // إخفاء القديم
-  fileTitle.style.opacity = "0";
-  pdfIcon.style.opacity = "0";
-  pdfViewer.style.opacity = "0";
-  fileTitle.style.transform = "translateY(-10px)";
-  pdfIcon.style.transform = "translateY(-10px)";
-  pdfViewer.style.transform = "translateY(-10px)";
-
-  setTimeout(() => {
-    fileTitle.textContent = pdf.name;
-    pdfIcon.src = "/asset/icons/pdf-icon.png";
-    pdfViewer.src = `/asset/storage/${pdf.file}`;
-
-    // إظهار الجديد
-    fileTitle.style.opacity = "1";
-    pdfIcon.style.opacity = "1";
-    pdfViewer.style.opacity = "1";
-    fileTitle.style.transform = "translateY(0)";
-    pdfIcon.style.transform = "translateY(0)";
-    pdfViewer.style.transform = "translateY(0)";
-  }, 300); // وقت الإخفاء قبل عرض الجديد
+  fileTitle.textContent = pdf.name;
+  pdfIcon.src = "/asset/icons/pdf-icon.png";
+  pdfViewer.src = `/asset/storage/${pdf.file}`;
 }
 
 // التحقق من وجود الملف قبل عرضه
@@ -85,29 +63,64 @@ async function fileExists(url) {
       const card = document.createElement("div");
       card.classList.add("pdf-card");
       card.style.border = "1px solid #ccc";
-      card.style.padding = "10px";
       card.style.borderRadius = "8px";
       card.style.cursor = "pointer";
-      card.style.transition = "background 0.3s ease";
-      card.addEventListener("mouseover", () => card.style.background = "#f0f0f0");
-      card.addEventListener("mouseout", () => card.style.background = "#fff");
+      card.style.position = "relative";
+      card.style.overflow = "hidden";
+      card.style.padding = "0";
+      card.style.height = "150px"; // ارتفاع مناسب عشان الايقونة full
+      card.style.display = "flex";
+      card.style.flexDirection = "column";
+      card.style.justifyContent = "center";
+      card.style.alignItems = "center";
 
-      const img = document.createElement("img");
-      img.src = "/asset/icons/pdf-icon.png";
-      img.alt = pdf.name;
-      img.style.width = "50px";
+      // الأيقونة تغطي الكارت كلها
+      const icon = document.createElement("img");
+      icon.src = "/asset/icons/pdf-icon.png";
+      icon.alt = pdf.name;
+      icon.style.width = "100%";
+      icon.style.height = "100%";
+      icon.style.objectFit = "cover";
+      icon.style.transition = "transform 0.3s ease";
+      icon.style.display = "block";
 
-      const title = document.createElement("h3");
-      title.textContent = pdf.name;
+      // زر عرض الكتاب مخفي في البداية
+      const btn = document.createElement("button");
+      btn.textContent = "عرض الكتاب";
+      btn.style.position = "absolute";
+      btn.style.bottom = "10px";
+      btn.style.left = "50%";
+      btn.style.transform = "translateX(-50%)";
+      btn.style.padding = "8px 15px";
+      btn.style.fontSize = "14px";
+      btn.style.border = "none";
+      btn.style.borderRadius = "5px";
+      btn.style.backgroundColor = "#007bff";
+      btn.style.color = "white";
+      btn.style.cursor = "pointer";
+      btn.style.opacity = "0";
+      btn.style.transition = "opacity 0.3s ease";
+      btn.style.zIndex = "10";
 
-      card.appendChild(img);
-      card.appendChild(title);
-      card.addEventListener("click", () => displayBook(pdf));
+      // عند مرور الماوس على الكارت تظهر الزر وتكبر الأيقونة شوية
+      card.addEventListener("mouseenter", () => {
+        btn.style.opacity = "1";
+        icon.style.transform = "scale(1.1)";
+      });
+      card.addEventListener("mouseleave", () => {
+        btn.style.opacity = "0";
+        icon.style.transform = "scale(1)";
+      });
 
+      // عند الضغط على الزر يعرض الكتاب مباشرة
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation(); // منع الحدث من الصعود للكارت
+        displayBook(pdf);
+      });
+
+      card.appendChild(icon);
+      card.appendChild(btn);
       pdfList.appendChild(card);
-
-      // عرض أول كتاب تلقائي لو مش معروض كتاب بعد
-      if (!pdfViewer.src) displayBook(pdf);
     }
   }
 })();
