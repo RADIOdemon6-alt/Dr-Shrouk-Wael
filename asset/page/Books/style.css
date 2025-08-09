@@ -137,74 +137,50 @@ body {
   border-radius: 10px;
   cursor: pointer;
 }
-/* ===== loading-spinner ===== */
-.loading-spinner {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(11, 13, 23, 0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+/* ===== pdf-card&list ===== */
+.pdf-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  padding: 15px;
 }
 
-.spinner {
-  width: 50px;
-  height: 50px;
-  border: 5px solid #fff;
-  border-top: 5px solid #ff4081;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-.hidden {
-  display: none !important;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-} 
-/* ===== pdf-item ===== */
-.pdf-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  margin-bottom: 6px;
+.pdf-card {
   background: #fff;
-  transition: background 0.2s ease;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  padding: 15px;
+  text-align: center;
+  transition: transform 0.2s ease;
 }
 
-.pdf-item:hover {
-  background: #f9f9f9;
+.pdf-card:hover {
+  transform: translateY(-5px);
 }
 
-.pdf-item a {
+.pdf-card img {
+  width: 60px;
+  height: 60px;
+  margin-bottom: 10px;
+}
+
+.pdf-card h3 {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.open-btn {
+  display: inline-block;
+  padding: 6px 12px;
+  background: #007BFF;
+  color: #fff;
+  border-radius: 6px;
   text-decoration: none;
-  color: #007bff;
-  flex: 1;
+  font-size: 14px;
 }
 
-.pdf-item a:hover {
-  text-decoration: underline;
-}
-
-.delete-btn {
-  cursor: pointer;
-  color: red;
-  font-weight: bold;
-  font-size: 18px;
-  padding: 0 6px;
-  transition: color 0.2s ease;
-}
-
-.delete-btn:hover {
-  color: darkred;
+.open-btn:hover {
+  background: #0056b3;
 } 
 /* ===== Navigation Bar ===== */
 .navigation {
