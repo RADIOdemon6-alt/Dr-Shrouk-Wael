@@ -48,23 +48,48 @@ body {
   object-fit: cover;
 }
 
-/* ===== معلومات البروفايل ===== */
+/* ====   معلومات البروفايل   ==== */
 .profile-info {
   flex: 1;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 10px;
-  font-weight: 600;
-  font-size: 18px;
-  color: #C084FC;
-  text-shadow: 0 0 8px rgba(192, 132, 252, 0.7);
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: flex-start;
+  align-items: stretch;
 }
 
 .profile-info span {
+  background: rgba(192, 132, 252, 0.15);
+  box-shadow: 0 0 15px rgba(192, 132, 252, 0.6);
+  border-radius: 12px;
+  padding: 12px 20px;
+  min-width: 140px;
+  flex: 1 1 140px;
   display: flex;
-  gap: 10px;
-  align-items: center;
+  flex-direction: column;
+  gap: 8px;
+  color: #E0C3FC;
+  font-weight: 600;
+  font-size: 16px;
+  text-align: center;
+  transition: background 0.3s ease;
+  cursor: default;
+}
+
+.profile-info span:hover {
+  background: rgba(192, 132, 252, 0.25);
+}
+
+.profile-info strong {
+  font-size: 18px;
+  font-weight: 900;
+  color: #C084FC;
+  text-shadow:
+    0 0 8px #C084FC,
+    0 0 20px #A56EDC,
+    0 0 30px #A56EDC,
+    0 0 40px #C084FC;
+  user-select: none;
 }
 
 /* ===== أزرار الاتصال ===== */
