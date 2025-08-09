@@ -261,14 +261,16 @@ body, html {
 /* حاوية خيارات الإجابة */
 .options-container {
   display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: center;
+  flex-direction: column; /* عشان تكون عمودية */
+  gap: 12px; /* مسافة بين الأزرار */
+  justify-content: flex-start;
+  width: 100%;
 }
 
 /* أزرار الإجابة */
 .option-btn {
-  padding: 12px 15px;
+  width: 100%; /* عرض كامل حسب الحاوية */
+  padding: 14px 20px;
   font-size: 1rem;
   border: none;
   border-radius: 12px;
@@ -278,8 +280,7 @@ body, html {
   box-shadow: 0 0 8px rgba(0, 255, 171, 0.3);
   transition: background 0.3s ease, box-shadow 0.3s ease;
   user-select: none;
-  min-width: 120px;  /* خليه على الأقل 120 بكسل */
-  flex: 0 1 auto;    /* خلي العرض طبيعي حسب المحتوى */
+  text-align: right; /* بما أن النص عربي، نخلي النص يمين */
 }
 
 /* تأثير عند المرور على الأزرار */
