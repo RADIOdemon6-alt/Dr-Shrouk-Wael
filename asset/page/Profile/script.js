@@ -21,24 +21,28 @@ document.addEventListener("DOMContentLoaded", () => {
   const userNumberEl = document.getElementById("userNumber");
   const userClassEl = document.getElementById("userClass");
   const userRoleEl = document.getElementById("userRole");
+  const userUIDEl = document.getElementById("userUID");
 
   const studentsContainer = document.getElementById("studentsContainer");
   const showStudentsBtn = document.querySelector(".show-students-btn");
+  const logoutBtn = document.getElementById("logoutBtn");
 
   let currentUserUID = null;
   let currentUserRole = null; // "teacher" أو "student"
   let currentUserGrade = null;
 
   // تسجيل الخروج
-  document.getElementById("logoutBtn").addEventListener("click", async () => {
-    try {
-      await signOut(auth);
-      alert("تم تسجيل الخروج بنجاح");
-      window.location.href = "https://dr-shrouk-wael.vercel.app/"; // عدل حسب مسار صفحة تسجيل الدخول
-    } catch (error) {
-      alert("حدث خطأ أثناء تسجيل الخروج: " + error.message);
-    }
-  });
+  if(logoutBtn) {
+    logoutBtn.addEventListener("click", async () => {
+      try {
+        await signOut(auth);
+        alert("تم تسجيل الخروج بنجاح");
+        window.location.href = "https://dr-shrouk-wael.vercel.app/"; // عدل حسب مسار صفحة تسجيل الدخول
+      } catch (error) {
+        alert("حدث خطأ أثناء تسجيل الخروج: " + error.message);
+      }
+    });
+  }
 
   // دوال أزرار التواصل
   function openWhatsApp() {
@@ -116,6 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     currentUserUID = user.uid;
+    if(userUIDEl) userUIDEl.textContent = currentUserUID;
 
     // جلب بيانات المعلم
     const teacherRef = doc(db, `teachers/${currentUserUID}`);
@@ -163,11 +168,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+// وظيفة لتفعيل ال active class في عناصر القائمة (إذا كانت موجودة)
 const list = document.querySelectorAll('.list');
 function activeLink() {
-    list.forEach((item) =>
-    item.classList.remove('active'));
-    this.classList.add('active');
+  list.forEach((item) => item.classList.remove('active'));
+  this.classList.add('active');
 }
-list.forEach((item) =>
-item.addEventListener('click',activeLink));
+list.forEach((item) => item.addEventListener('click', activeLink));
