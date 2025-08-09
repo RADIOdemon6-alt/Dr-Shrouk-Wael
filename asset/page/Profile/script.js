@@ -1,6 +1,6 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
 import { getFirestore, doc, getDoc, collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBSqV0VQGR3048_bhhDx7NYboe2jaYc85Y",
@@ -28,18 +28,18 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentUserUID = null;
   let currentUserRole = null; // "teacher" أو "student"
   let currentUserGrade = null;
-const auth = getAuth();
 
-document.getElementById("logoutBtn").addEventListener("click", async () => {
-  try {
-    await signOut(auth);
-    alert("تم تسجيل الخروج بنجاح");
-    // أعد التوجيه لصفحة تسجيل الدخول أو الرئيسية
-    window.location.href = "../path-to-login/login.html"; 
-  } catch (error) {
-    alert("حدث خطأ أثناء تسجيل الخروج: " + error.message);
-  }
-});
+  // تسجيل الخروج
+  document.getElementById("logoutBtn").addEventListener("click", async () => {
+    try {
+      await signOut(auth);
+      alert("تم تسجيل الخروج بنجاح");
+      window.location.href = "../login.html"; // عدل حسب مسار صفحة تسجيل الدخول
+    } catch (error) {
+      alert("حدث خطأ أثناء تسجيل الخروج: " + error.message);
+    }
+  });
+
   // دوال أزرار التواصل
   function openWhatsApp() {
     window.open("https://wa.me/201559002189", "_blank");
@@ -49,15 +49,17 @@ document.getElementById("logoutBtn").addEventListener("click", async () => {
     window.location.href = "tel:+201559002189";
   }
 
-  // ربط الأزرار بالأحداث
+  // ربط أزرار التواصل
   const whatsappBtn = document.querySelector(".whatsapp-btn");
   const phoneBtn = document.querySelector(".phone-btn");
 
   if (whatsappBtn) whatsappBtn.addEventListener("click", openWhatsApp);
   if (phoneBtn) phoneBtn.addEventListener("click", callTeacher);
 
-  showStudentsBtn.style.display = "none"; // نخفي الزر تلقائي
+  // إخفاء زر عرض الطلاب افتراضياً
+  if (showStudentsBtn) showStudentsBtn.style.display = "none";
 
+  // جلب الطلاب (خاص بالمعلمين)
   async function fetchStudents() {
     if (currentUserRole !== "teacher") {
       alert("هذه الميزة متاحة فقط للمعلمين.");
@@ -105,6 +107,7 @@ document.getElementById("logoutBtn").addEventListener("click", async () => {
     showStudentsBtn.addEventListener("click", fetchStudents);
   }
 
+  // تحقق حالة تسجيل الدخول وجلب بيانات المستخدم
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
       alert("لم يتم تسجيل الدخول! يرجى تسجيل الدخول أولاً.");
@@ -125,7 +128,7 @@ document.getElementById("logoutBtn").addEventListener("click", async () => {
       userClassEl.textContent = "-";
       userRoleEl.textContent = "معلم";
       currentUserRole = "teacher";
-      showStudentsBtn.style.display = "inline-block";
+      if (showStudentsBtn) showStudentsBtn.style.display = "inline-block";
       return;
     }
 
@@ -144,7 +147,7 @@ document.getElementById("logoutBtn").addEventListener("click", async () => {
         userRoleEl.textContent = "طالب";
         currentUserRole = "student";
         currentUserGrade = grade;
-        showStudentsBtn.style.display = "none";
+        if (showStudentsBtn) showStudentsBtn.style.display = "none";
         foundStudent = true;
         break;
       }
@@ -156,7 +159,7 @@ document.getElementById("logoutBtn").addEventListener("click", async () => {
       userNumberEl.textContent = "-";
       userClassEl.textContent = "-";
       userRoleEl.textContent = "-";
-      showStudentsBtn.style.display = "none";
+      if (showStudentsBtn) showStudentsBtn.style.display = "none";
     }
   });
 });
