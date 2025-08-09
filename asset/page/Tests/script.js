@@ -32,27 +32,22 @@ const auth = getAuth(app);
 let currentUser = null;
 let isTeacher = false;
 
+const addBtn = document.getElementById("addTestBtn");
+const addFormContainer = document.getElementById("addTestForm");
+const testContainer = document.getElementById("testContainer");
+
 // جلب دور المستخدم (معلم أو طالب)
 async function fetchUserRole(uid) {
   try {
     const userDoc = await getDoc(doc(db, "teachers", uid));
-    if (userDoc.exists()) {
-      return true;
-    }
-    return false;
+    return userDoc.exists();
   } catch (e) {
     console.error("خطأ في جلب دور المستخدم:", e);
     return false;
   }
 }
 
-const addBtn = document.getElementById("addTestBtn");
-const addFormContainer = document.getElementById("addTestForm");
-const testContainer = document.getElementById("testContainer");
-
-// خفي زر الإضافة بشكل افتراضي
-addBtn.style.display = "none";
-
+// تفعيل/إخفاء نموذج الإضافة
 function toggleAddForm(show) {
   if (show) {
     addFormContainer.classList.remove("hidden");
@@ -63,11 +58,13 @@ function toggleAddForm(show) {
   }
 }
 
+// إنشاء بطاقة سؤال مع خيارات وإظهار الإجابة الصحيحة فقط للمعلم
 function createTestCard(testDoc) {
   const data = testDoc.data();
   const card = document.createElement("div");
   card.className = "test-card";
 
+  // سؤال نصي أو صورة
   if (data.questionImage) {
     const img = document.createElement("img");
     img.src = data.questionImage;
@@ -81,6 +78,7 @@ function createTestCard(testDoc) {
     card.appendChild(questionEl);
   }
 
+  // خيارات
   const options = [...data.incorrectAnswers, data.correctAnswer];
   options.sort(() => Math.random() - 0.5);
 
@@ -92,19 +90,22 @@ function createTestCard(testDoc) {
     btn.className = "option-btn";
     btn.textContent = opt;
 
+    // إذا المعلم فقط يظهر الإجابة الصحيحة بخلفية خضراء
     if (isTeacher && opt === data.correctAnswer) {
       btn.dataset.correct = "true";
       btn.style.backgroundColor = "#28a745";
     }
 
     btn.addEventListener("click", () => {
+      // تعطيل كل الأزرار بعد اختيار إجابة
       optionsContainer.querySelectorAll("button").forEach(b => b.disabled = true);
 
+      // فقط إذا الطالب هو الذي يختار، نظهر الأخضر أو الأحمر بعد الاختيار
       if (!isTeacher) {
         if (opt === data.correctAnswer) {
-          btn.style.backgroundColor = "#28a745";
+          btn.style.backgroundColor = "#28a745"; // أخضر
         } else {
-          btn.style.backgroundColor = "#dc3545";
+          btn.style.backgroundColor = "#dc3545"; // أحمر
         }
       }
     });
@@ -114,6 +115,7 @@ function createTestCard(testDoc) {
 
   card.appendChild(optionsContainer);
 
+  // زر حذف يظهر فقط للمعلم
   if (isTeacher) {
     const delBtn = document.createElement("button");
     delBtn.className = "delete-test-btn";
@@ -130,18 +132,15 @@ function createTestCard(testDoc) {
   return card;
 }
 
+// تحميل وعرض الاختبارات
 async function loadTests() {
   testContainer.innerHTML = "جارٍ تحميل الاختبارات...";
-
-  addBtn.style.display = "none"; // اخفي زر الإضافة قبل التحميل
-
   try {
     const snapshot = await getDocs(collection(db, "Tests"));
     testContainer.innerHTML = "";
 
     if (snapshot.empty) {
       testContainer.textContent = "لا يوجد اختبارات حتى الآن.";
-      addBtn.style.display = "none";
       return;
     }
 
@@ -149,17 +148,13 @@ async function loadTests() {
       const card = createTestCard(docSnap);
       testContainer.appendChild(card);
     });
-
-    if (isTeacher) {
-      addBtn.style.display = "block"; // اعرض زر الإضافة بعد تحميل الاختبارات
-    }
   } catch (e) {
     testContainer.textContent = "حدث خطأ أثناء تحميل الاختبارات.";
     console.error(e);
-    addBtn.style.display = "none";
   }
 }
 
+// إضافة اختبار جديد
 async function addTest(e) {
   e.preventDefault();
 
@@ -198,16 +193,21 @@ async function addTest(e) {
   }
 }
 
+// مراقبة حالة تسجيل الدخول وجلب دور المستخدم
 onAuthStateChanged(auth, async user => {
   currentUser = user;
   if (user) {
     isTeacher = await fetchUserRole(user.uid);
+    addBtn.style.display = isTeacher ? "block" : "none";
   } else {
     isTeacher = false;
+    addBtn.style.display = "none";
+    toggleAddForm(false);
   }
   loadTests();
 });
 
+// التحكم بزر الإضافة
 addBtn.addEventListener("click", () => {
   if (addFormContainer.classList.contains("hidden")) {
     toggleAddForm(true);
@@ -216,4 +216,5 @@ addBtn.addEventListener("click", () => {
   }
 });
 
+// ربط حدث الإرسال للنموذج
 addFormContainer.addEventListener("submit", addTest);
