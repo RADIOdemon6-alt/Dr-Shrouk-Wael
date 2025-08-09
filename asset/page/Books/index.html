@@ -1,10 +1,10 @@
-!!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>DR-SHROUK</title>
-  <link rel="stylesheet" href="style.css">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
@@ -12,11 +12,11 @@
     <h1>DR-SHROUK</h1>
   </div>
 
+  <!-- شريط التقدم -->
+  <div id="progressContainer" style="display:none; width:100%; background:#ccc; height:6px; border-radius:3px; overflow:hidden;">
+    <div id="progressBar" style="width:0%; height:100%; background:green;"></div>
+  </div>
 
-<!-- شريط التقدم -->
-<div id="progressContainer" style="display:none; width:100%; background:#ccc; height:6px; border-radius:3px; overflow:hidden;">
-  <div id="progressBar" style="width:0%; height:100%; background:green;"></div>
-</div>
   <div class="pdf-list" id="pdfList">
     <!-- سيتم عرض ملفات PDF هنا -->
   </div>
@@ -25,90 +25,83 @@
 
   <div id="popup" class="popup hidden">
     <div class="popup-content">
-      <img src="/asset/icons/periodic-table.jpg" alt="جدول العناصر الدوري">
+      <img src="/asset/icons/periodic-table.jpg" alt="جدول العناصر الدوري" />
       <p>جدول العناصر الدوري</p>
       <button id="closePopup">❌ إغلاق</button>
     </div>
   </div>
 
-  <div class="navigation">  
-    <ul>  
-        <li class="list">  
-            <a href="https://dr-shrouk-wael.vercel.app/asset/page/home/index.html#">  
-                <span class="icon">  
-                    <ion-icon name="book-outline"></ion-icon>  
-                </span>  
-                <span class="text">الرئيسيه</span>  
-                <span class="circle"></span>  
-            </a>  
-        </li>  
-      <li class="list active">  
-        <a href="#">  
-          <span class="icon">  
-            <ion-icon name="school-outline"></ion-icon>  
-          </span>  
-          <span class="text">الكتب</span>  
-          <span class="circle"></span>  
-        </a>  
-      </li>  
-        <li class="list">  
-        <a href="https://dr-shrouk-wael.vercel.app/asset/page/Books/index.html#">  
-          <span class="icon">  
-            <ion-icon name="book-outline"></ion-icon>  
-          </span>  
-          <span class="text">الكتب</span>  
-          <span class="circle"></span>  
-        </a>  
-      </li>  
-        <li class="list">  
-            <a href="#">  
-                <span class="icon">  
-                    <ion-icon name="person-outline"></ion-icon>  
-                </span>  
-                <span class="text">البروفايل</span>  
-                <span class="circle"></span>  
-            </a>  
-        </li>  
-        <li class="list">
-  <a href="#">
-    <span class="icon">
-      <ion-icon name="videocam-outline"></ion-icon>
-    </span>
-    <span class="text">فيديوهاتي</span>
-    <span class="circle"></span>
-  </a>
-</li>
-        <div class="indicator"></div>  
-    </ul>  
-</div>  
-<div id="consoleOutput" style="background:#111;color:#0f0;padding:10px;font-family:monospace;max-height:200px;overflow:auto;font-size:13px;"></div>
+  <div class="navigation">
+    <ul>
+      <li class="list">
+        <a href="https://dr-shrouk-wael.vercel.app/asset/page/home/index.html#">
+          <span class="icon">
+            <ion-icon name="book-outline"></ion-icon>
+          </span>
+          <span class="text">الرئيسية</span>
+          <span class="circle"></span>
+        </a>
+      </li>
+      <li class="list active">
+        <a href="#">
+          <span class="icon">
+            <ion-icon name="school-outline"></ion-icon>
+          </span>
+          <span class="text">الكتب</span>
+          <span class="circle"></span>
+        </a>
+      </li>
+      <li class="list">
+        <a href="#">
+          <span class="icon">
+            <ion-icon name="person-outline"></ion-icon>
+          </span>
+          <span class="text">البروفايل</span>
+          <span class="circle"></span>
+        </a>
+      </li>
+      <li class="list">
+        <a href="#">
+          <span class="icon">
+            <ion-icon name="videocam-outline"></ion-icon>
+          </span>
+          <span class="text">فيديوهاتي</span>
+          <span class="circle"></span>
+        </a>
+      </li>
+      <div class="indicator"></div>
+    </ul>
+  </div>
 
-<script>
-  // حفظ الـ console الأصلي
-  const oldLog = console.log;
-  const oldError = console.error;
+  <div id="consoleOutput" style="background:#111;color:#0f0;padding:10px;font-family:monospace;max-height:200px;overflow:auto;font-size:13px;"></div>
 
-  function printToPage(type, ...args) {
-    const out = document.getElementById("consoleOutput");
-    const msg = document.createElement("div");
-    msg.textContent = `[${type.toUpperCase()}] ${args.join(" ")}`;
-    msg.style.color = type === "error" ? "red" : "#0f0";
-    out.appendChild(msg);
-    out.scrollTop = out.scrollHeight; // ينزل للأسفل تلقائي
-  }
+  <script>
+    // حفظ الـ console الأصلي
+    const oldLog = console.log;
+    const oldError = console.error;
 
-  console.log = function(...args) {
-    oldLog.apply(console, args);
-    printToPage("log", ...args);
-  };
+    function printToPage(type, ...args) {
+      const out = document.getElementById("consoleOutput");
+      const msg = document.createElement("div");
+      msg.textContent = `[${type.toUpperCase()}] ${args.join(" ")}`;
+      msg.style.color = type === "error" ? "red" : "#0f0";
+      out.appendChild(msg);
+      out.scrollTop = out.scrollHeight; // ينزل للأسفل تلقائي
+    }
 
-  console.error = function(...args) {
-    oldError.apply(console, args);
-    printToPage("error", ...args);
-  };
-</script>
-<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>  
-<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    console.log = function(...args) {
+      oldLog.apply(console, args);
+      printToPage("log", ...args);
+    };
+
+    console.error = function(...args) {
+      oldError.apply(console, args);
+      printToPage("error", ...args);
+    };
+  </script>
+
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
   <script type="module" src="script.js"></script>
 </body>
-              </html>
+</html>
