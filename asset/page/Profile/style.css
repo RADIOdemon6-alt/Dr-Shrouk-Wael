@@ -5,16 +5,16 @@
   padding: 0;
   box-sizing: border-box;
   font-family: 'Poppins', sans-serif;
-  color: #E0C3FC; /* بدل الأبيض، لون ناعم قريب للموف */
 }
 
 body {
   background-color: #0B0D17;
+  color: white;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px 15px 100px; /* وسّع padding bottom عشان النافيجيشن */
+  padding-bottom: 100px;
 }
 
 /* ===== صندوق البروفايل ===== */
