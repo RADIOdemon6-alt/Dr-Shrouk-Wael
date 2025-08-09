@@ -38,10 +38,11 @@ function callTeacher() {
   window.location.href = "tel:+201559002189";
 }
 
-showStudentsBtn.style.display = "none"; // نخفي الزر تلقائي
+// نخفي زر عرض الطلاب افتراضياً
+showStudentsBtn.style.display = "none";
 
-// عرض الطلاب فقط لو معلم
-async function fetchStudents() {
+// تعريف الدالة fetchStudents في النطاق العام (لتُستخدم في HTML onclick أو بطريقة أخرى)
+window.fetchStudents = async function() {
   if (currentUserRole !== "teacher") {
     alert("هذه الميزة متاحة فقط للمعلمين.");
     return;
@@ -50,7 +51,6 @@ async function fetchStudents() {
   studentsContainer.innerHTML = "جارِ التحميل...";
 
   try {
-    // سنجلب جميع الطلاب من كل الصفوف (1,2,3) مثلاً
     const grades = ["1", "2", "3"];
     let allStudents = [];
 
@@ -71,9 +71,8 @@ async function fetchStudents() {
       return;
     }
 
-    // نعرض الطلاب في مربعات
     studentsContainer.innerHTML = allStudents.map(student => `
-      <div class="student-card">
+      <div class="student-card" style="background: rgba(192,132,252,0.2); margin-bottom: 12px; padding: 10px; border-radius: 8px;">
         <strong>الاسم:</strong> ${student.name}<br>
         <strong>الرقم:</strong> ${student.phone}<br>
         <strong>الصف:</strong> ${student.grade}<br>
@@ -85,20 +84,20 @@ async function fetchStudents() {
     console.error("خطأ في جلب الطلاب:", error);
     studentsContainer.innerHTML = "<p>حدث خطأ أثناء تحميل الطلاب.</p>";
   }
-}
+};
 
-// عند تغيير حالة الدخول (الدخول أو الخروج)
+// تتبع حالة الدخول للمستخدم
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     alert("لم يتم تسجيل الدخول! يرجى تسجيل الدخول أولاً.");
-    window.location.href = "../login.html"; // غير الرابط حسب مكان صفحة تسجيل الدخول
+    window.location.href = "../login.html"; // عدل المسار حسب ملف تسجيل الدخول عندك
     return;
   }
 
   currentUserUID = user.uid;
   userUIDEl.textContent = currentUserUID;
 
-  // محاولة جلب بيانات المعلم أولاً
+  // جلب بيانات المعلم
   const teacherRef = doc(db, `teachers/${currentUserUID}`);
   const teacherSnap = await getDoc(teacherRef);
 
@@ -109,11 +108,11 @@ onAuthStateChanged(auth, async (user) => {
     userClassEl.textContent = "-";
     userRoleEl.textContent = "معلم";
     currentUserRole = "teacher";
-    showStudentsBtn.style.display = "inline-block";
+    showStudentsBtn.style.display = "inline-block"; // إظهار زر عرض الطلاب للمعلمين
     return;
   }
 
-  // لو مش معلم، نبحث بين الطلاب في الصفوف
+  // جلب بيانات الطالب
   const grades = ["1", "2", "3"];
   let foundStudent = false;
 
@@ -128,7 +127,7 @@ onAuthStateChanged(auth, async (user) => {
       userRoleEl.textContent = "طالب";
       currentUserRole = "student";
       currentUserGrade = grade;
-      showStudentsBtn.style.display = "none";
+      showStudentsBtn.style.display = "none"; // إخفاء زر عرض الطلاب للطلاب
       foundStudent = true;
       break;
     }
