@@ -293,7 +293,7 @@ body {
 }
 
 /* مؤشر دائري متحرك */
-.indicator {
+/*.indicator {
   position: absolute;
   top: -50%;
   left: 0;
