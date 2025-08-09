@@ -32,25 +32,22 @@ const auth = getAuth(app);
 let currentUser = null;
 let isTeacher = false;
 
+const addBtn = document.getElementById("addTestBtn");
+const addFormContainer = document.getElementById("addTestForm");
+const testContainer = document.getElementById("testContainer");
+
 // جلب دور المستخدم (معلم أو طالب)
 async function fetchUserRole(uid) {
   try {
-    const userDoc = await getDoc(doc(db, "teachers", uid));  // بدل "Users" صرنا نجيب من "teachers"
-    if (userDoc.exists()) {
-      // بما إنه موجود في "teachers" معناها معلم
-      return true;
-    }
-    return false; // لو مش موجود معناه مش معلم
+    const userDoc = await getDoc(doc(db, "teachers", uid));
+    return userDoc.exists();
   } catch (e) {
     console.error("خطأ في جلب دور المستخدم:", e);
     return false;
   }
 }
-// تفعيل/إخفاء نموذج الإضافة
-const addBtn = document.getElementById("addTestBtn");
-const addFormContainer = document.getElementById("addTestForm");
-const testContainer = document.getElementById("testContainer");
 
+// تفعيل/إخفاء نموذج الإضافة
 function toggleAddForm(show) {
   if (show) {
     addFormContainer.classList.remove("hidden");
