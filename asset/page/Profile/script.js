@@ -2,7 +2,6 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebas
 import { getFirestore, doc, getDoc, collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
-// إعداد Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBSqV0VQGR3048_bhhDx7NYboe2jaYc85Y",
   authDomain: "dr-shrouk-wael.firebaseapp.com",
@@ -17,139 +16,136 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-const userNameEl = document.getElementById("userName");
-const userNumberEl = document.getElementById("userNumber");
-const userClassEl = document.getElementById("userClass");
-const userRoleEl = document.getElementById("userRole");
+document.addEventListener("DOMContentLoaded", () => {
+  const userNameEl = document.getElementById("userName");
+  const userNumberEl = document.getElementById("userNumber");
+  const userClassEl = document.getElementById("userClass");
+  const userRoleEl = document.getElementById("userRole");
 
-const studentsContainer = document.getElementById("studentsContainer");
-const showStudentsBtn = document.querySelector(".show-students-btn");
+  const studentsContainer = document.getElementById("studentsContainer");
+  const showStudentsBtn = document.querySelector(".show-students-btn");
 
-let currentUserUID = null;
-let currentUserRole = null; // "teacher" أو "student"
-let currentUserGrade = null;
+  let currentUserUID = null;
+  let currentUserRole = null; // "teacher" أو "student"
+  let currentUserGrade = null;
 
-function openWhatsApp() {
-  window.open("https://wa.me/201559002189", "_blank");
-}
-
-function callTeacher() {
-  window.location.href = "tel:+201559002189";
-}
-
-showStudentsBtn.style.display = "none"; // نخفي الزر تلقائي
-
-// عرض الطلاب فقط لو معلم
-async function fetchStudents() {
-  if (currentUserRole !== "teacher") {
-    alert("هذه الميزة متاحة فقط للمعلمين.");
-    return;
+  // دوال أزرار التواصل
+  function openWhatsApp() {
+    window.open("https://wa.me/201559002189", "_blank");
   }
 
-  studentsContainer.innerHTML = "جارِ التحميل...";
+  function callTeacher() {
+    window.location.href = "tel:+201559002189";
+  }
 
-  try {
-    const grades = ["1", "2", "3"];
-    let allStudents = [];
+  // ربط الأزرار بالأحداث
+  const whatsappBtn = document.querySelector(".whatsapp-btn");
+  const phoneBtn = document.querySelector(".phone-btn");
 
-    for (const grade of grades) {
-      const studentsCol = collection(db, `grades/${grade}/students`);
-      const snapshot = await getDocs(studentsCol);
-      snapshot.forEach(docSnap => {
-        allStudents.push({
-          id: docSnap.id,
-          grade,
-          ...docSnap.data()
-        });
-      });
-    }
+  if (whatsappBtn) whatsappBtn.addEventListener("click", openWhatsApp);
+  if (phoneBtn) phoneBtn.addEventListener("click", callTeacher);
 
-    if (allStudents.length === 0) {
-      studentsContainer.innerHTML = "<p>لا يوجد طلاب حالياً.</p>";
+  showStudentsBtn.style.display = "none"; // نخفي الزر تلقائي
+
+  async function fetchStudents() {
+    if (currentUserRole !== "teacher") {
+      alert("هذه الميزة متاحة فقط للمعلمين.");
       return;
     }
 
-    studentsContainer.innerHTML = allStudents.map(student => `
-      <div class="student-card">
-        <strong>الاسم:</strong> ${student.name}<br>
-        <strong>الرقم:</strong> ${student.phone}<br>
-        <strong>الصف:</strong> ${student.grade}<br>
-      </div>
-    `).join("");
+    studentsContainer.innerHTML = "جارِ التحميل...";
 
-  } catch (error) {
-    console.error("خطأ في جلب الطلاب:", error);
-    studentsContainer.innerHTML = "<p>حدث خطأ أثناء تحميل الطلاب.</p>";
-  }
-}
+    try {
+      const grades = ["1", "2", "3"];
+      let allStudents = [];
 
-// ربط الزر بالوظيفة
-if(showStudentsBtn) {
-  showStudentsBtn.addEventListener("click", fetchStudents);
-}
+      for (const grade of grades) {
+        const studentsCol = collection(db, `grades/${grade}/students`);
+        const snapshot = await getDocs(studentsCol);
+        snapshot.forEach(docSnap => {
+          allStudents.push({
+            id: docSnap.id,
+            grade,
+            ...docSnap.data()
+          });
+        });
+      }
 
-// زر مطور الموقع (نص يتحول لزر رابط)
-const devTag = document.querySelector('.developer-tag');
-if (devTag) {
-  devTag.style.cursor = 'pointer';
-  devTag.style.color = '#FFD700'; // لون ذهبي
-  devTag.addEventListener('click', () => {
-    window.open('https://your-website-link.com', '_blank'); // غير الرابط حسب المطلوب
-  });
-}
+      if (allStudents.length === 0) {
+        studentsContainer.innerHTML = "<p>لا يوجد طلاب حالياً.</p>";
+        return;
+      }
 
-// عند تغيير حالة الدخول (الدخول أو الخروج)
-onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    alert("لم يتم تسجيل الدخول! يرجى تسجيل الدخول أولاً.");
-    window.location.href = "../login.html"; // عدل الرابط حسب الحاجة
-    return;
-  }
+      studentsContainer.innerHTML = allStudents.map(student => `
+        <div class="student-card" style="background: rgba(192,132,252,0.15); padding: 12px; margin-bottom: 10px; border-radius: 10px;">
+          <strong>الاسم:</strong> ${student.name}<br>
+          <strong>الرقم:</strong> ${student.phone}<br>
+          <strong>الصف:</strong> ${student.grade}<br>
+        </div>
+      `).join("");
 
-  currentUserUID = user.uid;
-
-  // محاولة جلب بيانات المعلم أولاً
-  const teacherRef = doc(db, `teachers/${currentUserUID}`);
-  const teacherSnap = await getDoc(teacherRef);
-
-  if (teacherSnap.exists()) {
-    const teacherData = teacherSnap.data();
-    userNameEl.textContent = teacherData.name || "-";
-    userNumberEl.textContent = teacherData.phone || "-";
-    userClassEl.textContent = "-";
-    userRoleEl.textContent = "معلم";
-    currentUserRole = "teacher";
-    showStudentsBtn.style.display = "inline-block";
-    return;
-  }
-
-  // لو مش معلم، نبحث بين الطلاب في الصفوف
-  const grades = ["1", "2", "3"];
-  let foundStudent = false;
-
-  for (const grade of grades) {
-    const studentRef = doc(db, `grades/${grade}/students/${currentUserUID}`);
-    const studentSnap = await getDoc(studentRef);
-    if (studentSnap.exists()) {
-      const studentData = studentSnap.data();
-      userNameEl.textContent = studentData.name || "-";
-      userNumberEl.textContent = studentData.phone || "-";
-      userClassEl.textContent = studentData.grade || grade || "-";
-      userRoleEl.textContent = "طالب";
-      currentUserRole = "student";
-      currentUserGrade = grade;
-      showStudentsBtn.style.display = "none";
-      foundStudent = true;
-      break;
+    } catch (error) {
+      console.error("خطأ في جلب الطلاب:", error);
+      studentsContainer.innerHTML = "<p>حدث خطأ أثناء تحميل الطلاب.</p>";
     }
   }
 
-  if (!foundStudent) {
-    alert("لم يتم العثور على بيانات المستخدم.");
-    userNameEl.textContent = "-";
-    userNumberEl.textContent = "-";
-    userClassEl.textContent = "-";
-    userRoleEl.textContent = "-";
-    showStudentsBtn.style.display = "none";
+  if(showStudentsBtn) {
+    showStudentsBtn.addEventListener("click", fetchStudents);
   }
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      alert("لم يتم تسجيل الدخول! يرجى تسجيل الدخول أولاً.");
+      window.location.href = "../login.html"; // عدل الرابط حسب الحاجة
+      return;
+    }
+
+    currentUserUID = user.uid;
+
+    // جلب بيانات المعلم
+    const teacherRef = doc(db, `teachers/${currentUserUID}`);
+    const teacherSnap = await getDoc(teacherRef);
+
+    if (teacherSnap.exists()) {
+      const teacherData = teacherSnap.data();
+      userNameEl.textContent = teacherData.name || "-";
+      userNumberEl.textContent = teacherData.phone || "-";
+      userClassEl.textContent = "-";
+      userRoleEl.textContent = "معلم";
+      currentUserRole = "teacher";
+      showStudentsBtn.style.display = "inline-block";
+      return;
+    }
+
+    // جلب بيانات الطالب
+    const grades = ["1", "2", "3"];
+    let foundStudent = false;
+
+    for (const grade of grades) {
+      const studentRef = doc(db, `grades/${grade}/students/${currentUserUID}`);
+      const studentSnap = await getDoc(studentRef);
+      if (studentSnap.exists()) {
+        const studentData = studentSnap.data();
+        userNameEl.textContent = studentData.name || "-";
+        userNumberEl.textContent = studentData.phone || "-";
+        userClassEl.textContent = studentData.grade || grade || "-";
+        userRoleEl.textContent = "طالب";
+        currentUserRole = "student";
+        currentUserGrade = grade;
+        showStudentsBtn.style.display = "none";
+        foundStudent = true;
+        break;
+      }
+    }
+
+    if (!foundStudent) {
+      alert("لم يتم العثور على بيانات المستخدم.");
+      userNameEl.textContent = "-";
+      userNumberEl.textContent = "-";
+      userClassEl.textContent = "-";
+      userRoleEl.textContent = "-";
+      showStudentsBtn.style.display = "none";
+    }
+  });
 });
