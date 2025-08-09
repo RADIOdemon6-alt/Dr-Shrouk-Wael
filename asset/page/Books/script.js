@@ -16,14 +16,14 @@ pdfFiles.forEach(pdf => {
   card.classList.add("pdf-card");
 
   const img = document.createElement("img");
-  img.src = "asset/icons/pdf-icon.png";
+  img.src = "/asset/icons/pdf-icon.png";
   img.alt = pdf.name;
 
   const title = document.createElement("h3");
   title.textContent = pdf.name;
 
   const btn = document.createElement("a");
-  btn.href = `asset/storage/${pdf.file}`;
+  btn.href = `/asset/storage/${pdf.file}`;
   btn.target = "_blank";
   btn.textContent = "📖 عرض الكتاب";
   btn.classList.add("open-btn");
