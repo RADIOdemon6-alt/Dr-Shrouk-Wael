@@ -1,3 +1,4 @@
+
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
 import { getFirestore, doc, getDoc, collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
@@ -172,7 +173,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const list = document.querySelectorAll('.list');
   list.forEach(item => {
     item.addEventListener('click', function (e) {
-      e.preventDefault(); // إذا كانت روابط تريد منع إعادة تحميل الصفحة
+      // e.preventDefault();  // تم التعليق هنا لتفعيل التنقل عبر الرابط
       list.forEach(i => i.classList.remove('active'));
       this.classList.add('active');
     });
