@@ -5,7 +5,7 @@
   padding: 0;
   box-sizing: border-box;
   font-family: 'Poppins', sans-serif;
-  color: white;
+  color: #E0C3FC; /* بدل الأبيض، لون ناعم قريب للموف */
 }
 
 body {
@@ -14,34 +14,42 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  padding: 20px 15px 100px; /* وسّع padding bottom عشان النافيجيشن */
 }
 
 /* ===== صندوق البروفايل ===== */
 .profile-container {
-  width: 45%;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(15px);
-  border-radius: 15px;
-  padding: 20px;
+  width: 48%;
+  max-width: 550px;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+  border-radius: 18px;
+  padding: 22px 28px;
   display: flex;
-  gap: 20px;
-  box-shadow: 0 0 20px rgba(192, 132, 252, 0.4);
+  gap: 18px;
+  box-shadow: 0 0 25px rgba(192, 132, 252, 0.35);
   position: relative;
   margin-bottom: 40px;
+  transition: background 0.3s ease;
+}
+.profile-container:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 /* ===== صورة البروفايل ===== */
 .profile-pic {
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
+  width: 130px;
+  height: 130px;
+  border-radius: 18px; /* مستطيل بزوايا مدورة */
   overflow: hidden;
   border: 3px solid #C084FC;
-  box-shadow: 0 0 20px rgba(192, 132, 252, 0.7);
+  box-shadow: 0 0 25px rgba(192, 132, 252, 0.6);
   flex-shrink: 0;
+  transition: box-shadow 0.3s ease;
 }
-
+.profile-pic:hover {
+  box-shadow: 0 0 40px #C084FC;
+}
 .profile-pic img {
   width: 100%;
   height: 100%;
@@ -53,41 +61,38 @@ body {
   flex: 1;
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 18px;
   justify-content: flex-start;
   align-items: stretch;
 }
-
 .profile-info span {
-  background: rgba(192, 132, 252, 0.15);
-  box-shadow: 0 0 15px rgba(192, 132, 252, 0.6);
-  border-radius: 12px;
-  padding: 15px 25px;
+  background: rgba(192, 132, 252, 0.12);
+  box-shadow: 0 0 18px rgba(192, 132, 252, 0.5);
+  border-radius: 14px;
+  padding: 18px 28px;
   min-width: 140px;
   flex: 1 1 140px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  color: #E0C3FC;
+  gap: 12px;
+  color: #D3B8FF;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 17px;
   text-align: center;
   cursor: default;
   transition: background 0.3s ease;
 }
-
 .profile-info span:hover {
-  background: rgba(192, 132, 252, 0.25);
+  background: rgba(192, 132, 252, 0.28);
+  box-shadow: 0 0 25px #C084FC;
 }
-
 .profile-info strong {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 900;
   color: #C084FC;
   text-shadow:
-    0 0 8px #C084FC,
-    0 0 20px #A56EDC,
-    0 0 30px #A56EDC,
+    0 0 10px #C084FC,
+    0 0 25px #A56EDC,
     0 0 40px #C084FC;
   user-select: none;
 }
@@ -96,98 +101,100 @@ body {
 .contact-buttons {
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  margin-top: 15px;
+  gap: 16px;
+  margin-top: 20px;
 }
-
 .contact-button {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   background: linear-gradient(135deg, #00FFF7, #C084FC);
-  color: black;
-  font-weight: bold;
-  padding: 10px 18px;
-  border-radius: 25px;
+  color: #0B0D17;
+  font-weight: 700;
+  padding: 12px 22px;
+  border-radius: 30px;
   cursor: pointer;
   text-decoration: none;
-  font-size: 14px;
-  box-shadow: 0 0 10px rgba(0, 255, 247, 0.4), 0 0 20px rgba(192, 132, 252, 0.4);
-  transition: transform 0.3s ease;
+  font-size: 15px;
+  box-shadow: 0 0 15px rgba(0, 255, 247, 0.5), 0 0 25px rgba(192, 132, 252, 0.6);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   width: max-content;
+  user-select: none;
 }
-
 .contact-button:hover {
-  transform: scale(1.1);
+  transform: scale(1.12);
+  box-shadow: 0 0 30px rgba(0, 255, 247, 0.7), 0 0 35px rgba(192, 132, 252, 0.8);
 }
 
 /* ===== أيقونات داخل الأزرار ===== */
 .contact-button svg {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   fill: currentColor;
 }
 
 /* ===== زر عرض الطلاب ===== */
 .show-students-btn {
-  margin-top: 20px;
+  margin-top: 25px;
   align-self: flex-start;
   background: #C084FC;
-  padding: 12px 25px;
-  border-radius: 30px;
-  font-weight: 700;
-  font-size: 16px;
+  padding: 14px 32px;
+  border-radius: 35px;
+  font-weight: 800;
+  font-size: 17px;
   cursor: pointer;
   color: white;
-  box-shadow: 0 0 20px rgba(192, 132, 252, 0.8);
+  box-shadow: 0 0 25px rgba(192, 132, 252, 0.85);
   transition: background 0.3s ease;
   border: none;
+  user-select: none;
 }
-
 .show-students-btn:hover {
   background: #9a63c8;
 }
 
 /* ===== مربع الطلاب ===== */
 .students-list {
-  width: 90%;
+  width: 92%;
   max-width: 900px;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 20px;
-  padding: 20px;
-  background: rgba(255,255,255,0.05);
-  border-radius: 15px;
-  box-shadow: 0 0 30px rgba(192, 132, 252, 0.3);
+  gap: 22px;
+  padding: 22px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 18px;
+  box-shadow: 0 0 38px rgba(192, 132, 252, 0.35);
 }
 
 /* بطاقة الطالب */
 .student-card {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 15px;
-  color: #E0C3FC;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 18px 20px;
+  color: #D3B8FF;
   font-weight: 600;
-  box-shadow: 0 0 12px rgba(192, 132, 252, 0.5);
+  box-shadow: 0 0 18px rgba(192, 132, 252, 0.55);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   transition: background 0.3s ease;
+  cursor: default;
 }
-
 .student-card:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.18);
 }
 
-/* رقم مطور الموقع بالخط الذهبي */
+/* رقم مطور الموقع باللون الذهبي */
 .developer-contact {
-  margin-top: 30px;
-  font-size: 18px;
-  font-weight: 700;
+  margin-top: 38px;
+  font-size: 19px;
+  font-weight: 800;
   color: gold;
   text-align: center;
-  text-shadow: 0 0 15px gold;
+  text-shadow: 0 0 22px gold;
+  user-select: none;
 }
+
 /* ===== Navigation Bar ===== */
 .navigation {
   position: fixed;
@@ -207,14 +214,12 @@ body {
     inset -2px -2px 6px rgba(255, 255, 255, 0.1),
     inset 2px 2px 7px rgba(0, 0, 0, 0.45),
     0 -4px 18px rgba(0, 0, 0, 0.85),
-    0 0 15px rgba(0, 255, 171, 0.5);
+    0 0 18px rgba(0, 255, 171, 0.5);
 }
 
 .navigation ul {
   display: flex;
   width: 350px;
-  padding: 0;
-  margin: 0;
 }
 
 .navigation ul li {
@@ -234,17 +239,12 @@ body {
   width: 100%;
   text-align: center;
   font-weight: 600;
-  color: #00FFF7;
-  text-decoration: none;
-}
-
-.navigation ul li.active a {
-  color: #C084FC;
 }
 
 .navigation ul li a .icon {
   line-height: 75px;
   font-size: 1.5em;
+  color: #00FFF7;
   transition: 0.4s ease;
 }
 
@@ -255,11 +255,11 @@ body {
 
 .navigation ul li a .text {
   position: absolute;
+  color: #00FFF7;
   font-size: 0.75em;
   opacity: 0;
   transform: translateY(20px);
   transition: 0.4s;
-  color: #00FFF7;
 }
 
 .navigation ul li.active a .text {
@@ -277,7 +277,7 @@ body {
   background: rgba(0, 255, 171, 0.08);
   transform: translateY(-37px) scale(0);
   transition: 0.4s ease;
-  box-shadow: 0 0 12px rgba(0, 255, 171, 0.5);
+  box-shadow: 0 0 15px rgba(0, 255, 171, 0.5);
 }
 
 .navigation ul li.active a .circle {
@@ -312,4 +312,4 @@ body {
 }
 .navigation ul li:nth-child(5).active ~ .indicator {
   transform: translateX(calc(-70px * 4));
-    }
+}
