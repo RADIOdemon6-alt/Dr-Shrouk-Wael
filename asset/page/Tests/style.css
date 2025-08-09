@@ -268,7 +268,6 @@ body, html {
 
 /* أزرار الإجابة */
 .option-btn {
-  flex: 1 1 40%;
   padding: 12px 15px;
   font-size: 1rem;
   border: none;
@@ -279,7 +278,8 @@ body, html {
   box-shadow: 0 0 8px rgba(0, 255, 171, 0.3);
   transition: background 0.3s ease, box-shadow 0.3s ease;
   user-select: none;
-  min-width: 120px;
+  min-width: 120px;  /* خليه على الأقل 120 بكسل */
+  flex: 0 1 auto;    /* خلي العرض طبيعي حسب المحتوى */
 }
 
 /* تأثير عند المرور على الأزرار */
