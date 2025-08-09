@@ -291,37 +291,3 @@ body {
   box-shadow: 0 0 10px rgba(192, 132, 252, 0.5);
   pointer-events: none;
 }
-
-.navigation ul li.active a .circle {
-  transform: translate(-50%, -37px) scale(1);
-}
-
-.indicator {
-  position: absolute;
-  top: -50%;
-  width: 70px;
-  height: 70px;
-  background: linear-gradient(145deg, #00FFF7, #C084FC);
-  border: 5px solid #0B0D17;
-  border-radius: 50%;
-  transition: 0.5s ease;
-  box-shadow:
-    inset 1px 1px 5px rgba(0, 0, 0, 0.5),
-    0 6px 12px rgba(0, 0, 0, 0.7);
-}
-
-.navigation ul li:nth-child(1).active ~ .indicator {
-  transform: translateX(calc(-70px * 0));
-}
-.navigation ul li:nth-child(2).active ~ .indicator {
-  transform: translateX(calc(-70px * 1));
-}
-.navigation ul li:nth-child(3).active ~ .indicator {
-  transform: translateX(calc(-70px * 2));
-}
-.navigation ul li:nth-child(4).active ~ .indicator {
-  transform: translateX(calc(-70px * 3));
-}
-.navigation ul li:nth-child(5).active ~ .indicator {
-  transform: translateX(calc(-70px * 4));
-}
