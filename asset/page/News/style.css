@@ -89,9 +89,10 @@ body {
 }
 
 /* زر الفتح/الغلق */
+/* زر الفتح/الغلق (+) */
 .fab {
   position: fixed;
-  bottom: 20px;
+  top: 90px; /* بدل bottom */
   right: 20px;
   background: #00f7ff;
   border: none;
@@ -103,8 +104,15 @@ body {
   justify-content: center;
   cursor: pointer;
   box-shadow: 0 0 15px #00f7ff;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+  z-index: 200;
 }
+
+.fab:hover {
+  background: #00e0ff;
+  box-shadow: 0 0 20px #00f7ff, 0 0 40px #00f7ff;
+}
+
 .fab.rotate {
   transform: rotate(45deg);
 }
