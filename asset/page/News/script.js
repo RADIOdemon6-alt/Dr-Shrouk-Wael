@@ -1,7 +1,5 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-import { 
-  getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, getDoc 
-} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
 // إعداد Firebase
@@ -19,17 +17,37 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// عناصر DOM
 const newsContainer = document.getElementById("news-container");
-const form = document.getElementById("add-news-form");
-const toggleBtn = document.getElementById("toggle-form-btn");
+const teacherTools = document.getElementById("teacher-tools");
 const newsText = document.getElementById("news-text");
+const toggleBtn = document.getElementById("toggle-form-btn");
+const form = document.getElementById("add-news-form");
 const submitBtn = document.getElementById("submit-news-btn");
 
-let formVisible = false;
-let isTeacher = false;
+let isTeacher = false; // علشان نعرف الدور
 
-// زر الفتح/الغلق للفورم
+// عرض خبر
+function renderNews(id, text) {
+  const div = document.createElement("div");
+  div.className = "news-item";
+  div.innerHTML = `<p>${text}</p>`;
+
+  // زر الحذف يظهر للمعلم فقط
+  if (isTeacher) {
+    const delBtn = document.createElement("button");
+    delBtn.className = "delete-btn";
+    delBtn.textContent = "🗑";
+    delBtn.onclick = async () => {
+      await deleteDoc(doc(db, "news", id));
+    };
+    div.appendChild(delBtn);
+  }
+
+  newsContainer.appendChild(div);
+}
+
+// فتح/غلق الفورم
+let formVisible = false;
 toggleBtn.addEventListener("click", () => {
   formVisible = !formVisible;
   if (formVisible) {
@@ -47,7 +65,7 @@ toggleBtn.addEventListener("click", () => {
   }
 });
 
-// إضافة خبر
+// إضافة خبر جديد
 submitBtn.addEventListener("click", async () => {
   const text = newsText.value.trim();
   if (!text) return;
@@ -55,58 +73,40 @@ submitBtn.addEventListener("click", async () => {
   newsText.value = "";
 });
 
-// عرض الأخبار + زر المسح للمعلم
-function renderNews(id, text) {
-  const div = document.createElement("div");
-  div.className = "news-item";
-  div.textContent = text;
+// متابعة الأخبار لحظياً
+function startNewsListener() {
+  onSnapshot(collection(db, "news"), (snapshot) => {
+    newsContainer.innerHTML = "";
+    snapshot.forEach(docSnap => {
+      renderNews(docSnap.id, docSnap.data().text);
+    });
 
-  if (isTeacher) {
-    const delBtn = document.createElement("button");
-    delBtn.className = "delete-btn";
-    delBtn.textContent = "🗑";
-    delBtn.onclick = async () => {
-      await deleteDoc(doc(db, "news", id));
-    };
-    div.appendChild(delBtn);
-  }
-
-  newsContainer.appendChild(div);
+    // لو طالب → إشعار بالخبر الجديد
+    if (!isTeacher) {
+      const latest = snapshot.docs[snapshot.docs.length - 1]?.data()?.text;
+      if (latest) showNotification(latest);
+    }
+  });
 }
 
-// إشعارات للطلاب فقط
+// إشعارات
 function showNotification(msg) {
-  if (!isTeacher && Notification.permission === "granted") {
+  if (Notification.permission === "granted") {
     new Notification("📢 خبر جديد", { body: msg });
   }
 }
 
-// متابعة الأخبار
-onSnapshot(collection(db, "news"), (snapshot) => {
-  newsContainer.innerHTML = "";
-  snapshot.forEach(docSnap => {
-    renderNews(docSnap.id, docSnap.data().text);
-  });
-
-  // إشعار بالخبر الأحدث للطلاب
-  if (!isTeacher) {
-    const latest = snapshot.docs[snapshot.docs.length - 1]?.data()?.text;
-    if (latest) showNotification(latest);
-  }
-});
-
-// تحقق من دور المستخدم
+// التحقق من الدور
 onAuthStateChanged(auth, async (user) => {
   if (user) {
-    const teacherRef = doc(db, "teachers", user.uid);
+    const teacherRef = doc(db, `teachers/${user.uid}`);
     const teacherSnap = await getDoc(teacherRef);
     if (teacherSnap.exists()) {
       isTeacher = true;
-      toggleBtn.style.display = "flex";
-    } else {
-      isTeacher = false;
-      toggleBtn.style.display = "none";
+      teacherTools.classList.remove("hidden");
+      teacherTools.classList.add("visible");
     }
+    startNewsListener();
   } else {
     console.warn("لم يتم تسجيل دخول المستخدم");
   }
@@ -115,4 +115,4 @@ onAuthStateChanged(auth, async (user) => {
 // طلب إذن الإشعارات
 if (Notification.permission !== "granted") {
   Notification.requestPermission();
-               }
+}
