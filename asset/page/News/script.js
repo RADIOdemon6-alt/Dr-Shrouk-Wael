@@ -1,8 +1,6 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-import { getFirestore, collection, addDoc, getDocs, onSnapshot, deleteDoc, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
-// إعداد Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBSqV0VQGR3048_bhhDx7NYboe2jaYc85Y",
   authDomain: "dr-shrouk-wael.firebaseapp.com",
@@ -15,75 +13,47 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const auth = getAuth(app);
 
 const newsContainer = document.getElementById("news-container");
-const teacherTools = document.getElementById("teacher-tools");
-const addNewsBtn = document.getElementById("add-news-btn");
+const form = document.getElementById("add-news-form");
+const toggleBtn = document.getElementById("toggle-form-btn");
 const newsText = document.getElementById("news-text");
+const submitBtn = document.getElementById("submit-news-btn");
 
-// عرض الأخبار
-function renderNews(id, text, isTeacher) {
-  const div = document.createElement("div");
-  div.className = "news-item";
-  div.innerHTML = `<p>${text}</p>`;
-  
-  if (isTeacher) {
-    const delBtn = document.createElement("button");
-    delBtn.className = "delete-btn";
-    delBtn.textContent = "مسح";
-    delBtn.onclick = async () => {
-      await deleteDoc(doc(db, "news", id));
-    };
-    div.appendChild(delBtn);
-  }
-  
-  newsContainer.appendChild(div);
-}
-
-// إشعارات المتصفح
-function showNotification(msg) {
-  if (Notification.permission === "granted") {
-    new Notification("📢 خبر جديد", { body: msg });
-  }
-}
-
-// متابعة الأخبار لحظياً
-onSnapshot(collection(db, "news"), (snapshot) => {
-  newsContainer.innerHTML = "";
-  snapshot.forEach(docSnap => {
-    renderNews(docSnap.id, docSnap.data().text, teacherTools.classList.contains("visible"));
-  });
-  // لو طالب → اشعار بالخبر الجديد
-  if (!teacherTools.classList.contains("visible")) {
-    const latest = snapshot.docs[snapshot.docs.length - 1]?.data()?.text;
-    if (latest) showNotification(latest);
-  }
-});
-
-// تحقق تلقائي من الدور
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    const teacherRef = doc(db, `teachers/${user.uid}`);
-    const teacherSnap = await getDoc(teacherRef);
-    if (teacherSnap.exists()) {
-      teacherTools.classList.remove("hidden");
-      teacherTools.classList.add("visible");
-    }
+// زر الفتح والغلق
+let formVisible = false;
+toggleBtn.addEventListener("click", () => {
+  formVisible = !formVisible;
+  if (formVisible) {
+    toggleBtn.classList.add("rotate");
+    form.classList.remove("hidden");
+    setTimeout(() => form.classList.add("show"), 10);
   } else {
-    console.warn("لم يتم تسجيل دخول المستخدم");
+    form.classList.remove("show");
+    form.classList.add("explode");
+    setTimeout(() => {
+      form.classList.add("hidden");
+      form.classList.remove("explode");
+    }, 500);
+    toggleBtn.classList.remove("rotate");
   }
 });
 
-// إضافة خبر جديد
-addNewsBtn.onclick = async () => {
+// إضافة خبر
+submitBtn.addEventListener("click", async () => {
   const text = newsText.value.trim();
   if (!text) return;
   await addDoc(collection(db, "news"), { text, createdAt: Date.now() });
   newsText.value = "";
-};
+});
 
-// طلب إذن الإشعارات
-if (Notification.permission !== "granted") {
-  Notification.requestPermission();
-}
+// عرض الأخبار
+onSnapshot(collection(db, "news"), (snapshot) => {
+  newsContainer.innerHTML = "";
+  snapshot.forEach(docSnap => {
+    const div = document.createElement("div");
+    div.className = "news-item";
+    div.textContent = docSnap.data().text;
+    newsContainer.appendChild(div);
+  });
+});
