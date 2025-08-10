@@ -109,30 +109,33 @@ if (Notification.permission !== "granted") {
   Notification.requestPermission();
 }
 
-// 🔹 تحقق تلقائي من دور المستخدم بناء على تسجيل الدخول
+// 🔹 تحقق تلقائي من دور المستخدم
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     isTeacher = false;
     toggleBtn.style.display = "none";
+    form.style.display = "none";
     return;
   }
 
   try {
-    // تحقق إذا كان معلم
     const teacherSnap = await getDoc(doc(db, "teachers", user.uid));
     if (teacherSnap.exists()) {
       isTeacher = true;
-      toggleBtn.style.display = "block"; // إظهار زر إضافة الأخبار
+      toggleBtn.style.display = "block"; // إظهار الزر
+      form.style.display = "block"; // يجهز الفورم لكنه يظل hidden حتى الضغط على الزر
       return;
     }
 
-    // إذا مش معلم → طالب
+    // طالب
     isTeacher = false;
     toggleBtn.style.display = "none";
+    form.style.display = "none";
 
   } catch (err) {
     console.error("خطأ أثناء تحديد دور المستخدم:", err);
     isTeacher = false;
     toggleBtn.style.display = "none";
+    form.style.display = "none";
   }
 });
