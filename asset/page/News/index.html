@@ -3,42 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DR-SHROUK</title>
+  <title>DR-SHROUK - الأخبار</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- البار العلوي 3D -->
-  <header id="top-bar">
-    <h1>DR-SHROUK</h1>
+
+  <!-- الشريط العلوي -->
+  <header class="top-bar">
+    <h1 class="logo-text">DR-SHROUK</h1>
   </header>
 
-  <!-- نموذج تسجيل الدخول -->
-  <section id="auth-section">
-    <div id="loginForm" class="form active">
-      <h2>تسجيل الدخول</h2>
-      <input type="text" id="loginPhone" placeholder="رقم الهاتف">
-      <input type="password" id="loginPassword" placeholder="كلمة المرور">
-      <button onclick="login()">دخول</button>
+  <!-- محتوى الصفحة -->
+  <main>
+    <div id="news-container" class="news-container"></div>
+
+    <!-- أدوات المعلم -->
+    <div id="teacher-tools" class="teacher-tools hidden">
+      <textarea id="news-text" placeholder="أدخل الخبر الجديد..."></textarea>
+      <button id="add-news-btn">➕ إضافة خبر</button>
     </div>
-  </section>
+  </main>
 
-  <!-- قسم المعلم لإضافة الأخبار -->
-  <section id="teacher-section" class="hidden">
-    <h2>إضافة خبر جديد</h2>
-    <textarea id="newsText" placeholder="أدخل نص الخبر"></textarea>
-    <button onclick="addNews()">إضافة الخبر</button>
-  </section>
-
-  <!-- قائمة الأخبار -->
-  <section id="news-section">
-    <h2>الأخبار</h2>
-    <div id="newsContainer"></div>
-  </section>
-
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js"></script>
-  <script src="script.js"></script>
+  <!-- Firebase + سكربت -->
+  <script type="module" src="script.js"></script>
 </body>
 </html>
