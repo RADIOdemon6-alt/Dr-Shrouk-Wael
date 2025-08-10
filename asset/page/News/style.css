@@ -9,7 +9,8 @@
 body {
   margin: 0;
   font-family: 'Tajawal', sans-serif;
-  background: #0d0d0d;
+  background: url('your-image.jpg') no-repeat center center fixed;
+  background-size: cover; /* تغطي الشاشة بالكامل */
   color: #fff;
 }
 
