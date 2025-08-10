@@ -1,1 +1,36 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>DR-SHROUK</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
+  <!-- البار العلوي 3D -->
+  <header class="top-bar">
+    <h1>DR-SHROUK</h1>
+  </header>
+
+  <!-- منطقة الأخبار -->
+  <section id="news-container"></section>
+
+  <!-- زر إضافة خبر (للمعلمين فقط) -->
+  <button id="add-news-btn" class="hidden">+</button>
+
+  <!-- نافذة إضافة خبر -->
+  <div id="news-form-popup" class="popup hidden">
+    <h2>إضافة خبر جديد</h2>
+    <input type="text" id="news-title" placeholder="عنوان الخبر">
+    <textarea id="news-content" placeholder="محتوى الخبر"></textarea>
+    <button id="save-news-btn">حفظ</button>
+    <button id="close-popup">إغلاق</button>
+  </div>
+
+  <!-- إشعار منبثق -->
+  <div id="in-site-notification" class="hidden"></div>
+
+  <!-- Firebase + App.js -->
+  <script type="module" src="script.js"></script>
+</body>
+</html>
