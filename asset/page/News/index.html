@@ -2,36 +2,43 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DR-SHROUK</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
   <!-- البار العلوي 3D -->
-  <header class="top-bar">
+  <header id="top-bar">
     <h1>DR-SHROUK</h1>
   </header>
 
-  <!-- منطقة الأخبار -->
-  <section id="news-container"></section>
+  <!-- نموذج تسجيل الدخول -->
+  <section id="auth-section">
+    <div id="loginForm" class="form active">
+      <h2>تسجيل الدخول</h2>
+      <input type="text" id="loginPhone" placeholder="رقم الهاتف">
+      <input type="password" id="loginPassword" placeholder="كلمة المرور">
+      <button onclick="login()">دخول</button>
+    </div>
+  </section>
 
-  <!-- زر إضافة خبر (للمعلمين فقط) -->
-  <button id="add-news-btn" class="hidden">+</button>
-
-  <!-- نافذة إضافة خبر -->
-  <div id="news-form-popup" class="popup hidden">
+  <!-- قسم المعلم لإضافة الأخبار -->
+  <section id="teacher-section" class="hidden">
     <h2>إضافة خبر جديد</h2>
-    <input type="text" id="news-title" placeholder="عنوان الخبر">
-    <textarea id="news-content" placeholder="محتوى الخبر"></textarea>
-    <button id="save-news-btn">حفظ</button>
-    <button id="close-popup">إغلاق</button>
-  </div>
+    <textarea id="newsText" placeholder="أدخل نص الخبر"></textarea>
+    <button onclick="addNews()">إضافة الخبر</button>
+  </section>
 
-  <!-- إشعار منبثق -->
-  <div id="in-site-notification" class="hidden"></div>
+  <!-- قائمة الأخبار -->
+  <section id="news-section">
+    <h2>الأخبار</h2>
+    <div id="newsContainer"></div>
+  </section>
 
-  <!-- Firebase + App.js -->
-  <script type="module" src="script.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
