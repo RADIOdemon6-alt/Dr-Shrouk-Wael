@@ -1,27 +1,8 @@
-// -------------------- Firebase Import --------------------
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  query,
-  orderBy,
-  onSnapshot,
-  serverTimestamp,
-  doc,
-  getDoc
-} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-import {
-  getAuth,
-  onAuthStateChanged
-} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-import {
-  getMessaging,
-  getToken,
-  onMessage
-} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js';
+import { getFirestore, collection, addDoc, getDocs, onSnapshot, deleteDoc, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
-// -------------------- إعداد Firebase --------------------
+// إعداد Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBSqV0VQGR3048_bhhDx7NYboe2jaYc85Y",
   authDomain: "dr-shrouk-wael.firebaseapp.com",
@@ -35,91 +16,74 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
-const messaging = getMessaging(app);
 
-// -------------------- إشعارات --------------------
-function showInSiteNotification(msg) {
-  const notifDiv = document.getElementById("in-site-notification");
-  notifDiv.textContent = msg;
-  notifDiv.classList.remove("hidden");
-  setTimeout(() => notifDiv.classList.add("hidden"), 3000);
-}
+const newsContainer = document.getElementById("news-container");
+const teacherTools = document.getElementById("teacher-tools");
+const addNewsBtn = document.getElementById("add-news-btn");
+const newsText = document.getElementById("news-text");
 
-async function requestNotificationPermission() {
-  const permission = await Notification.requestPermission();
-  if (permission === "granted") {
-    getToken(messaging, {
-      vapidKey: "BBgOloCSmi9dueZz5_BD3bWopezdv86DoKioePjdaVkKA_vGrNYw0uDdhahJMYgeDMn5E27TMCUs0-SREqkvHYc"
-    }).then(token => {
-      console.log("FCM Token:", token);
-    });
-  }
-}
-
-onMessage(messaging, (payload) => {
-  if (payload.notification) {
-    showInSiteNotification(payload.notification.title);
-  }
-});
-
-// -------------------- الأخبار --------------------
-function loadNews() {
-  const newsContainer = document.getElementById("news-container");
-  const q = query(collection(db, "news"), orderBy("createdAt", "desc"));
-  onSnapshot(q, (snapshot) => {
-    newsContainer.innerHTML = "";
-    snapshot.forEach(doc => {
-      const news = doc.data();
-      const cube = document.createElement("div");
-      cube.className = "news-cube";
-      cube.innerHTML = `
-        <div class="news-title">${news.title}</div>
-        <div class="news-content hidden">${news.content}</div>
-      `;
-      cube.addEventListener("click", () => {
-        cube.querySelector(".news-content").classList.toggle("hidden");
-      });
-      newsContainer.appendChild(cube);
-    });
-  });
-}
-
-async function addNews() {
-  const title = document.getElementById("news-title").value.trim();
-  const content = document.getElementById("news-content").value.trim();
-  if (!title || !content) {
-    alert("يرجى كتابة العنوان والمحتوى");
-    return;
-  }
-  await addDoc(collection(db, "news"), {
-    title,
-    content,
-    createdAt: serverTimestamp()
-  });
-  showInSiteNotification("📢 تم إضافة خبر جديد!");
-  document.getElementById("news-form-popup").classList.add("hidden");
-}
-
-// -------------------- التحقق بعد تسجيل الدخول --------------------
-onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    alert("يرجى تسجيل الدخول أولاً");
-    window.location.href = "https://dr-shrouk-wael.vercel.app/";
-    return;
-  }
-
-  // تحقق إذا كان معلم
-  const teacherRef = doc(db, `teachers/${user.uid}`);
-  const teacherSnap = await getDoc(teacherRef);
-  if (teacherSnap.exists()) {
-    document.getElementById("add-news-btn").classList.remove("hidden");
-    document.getElementById("add-news-btn").onclick = () => {
-      document.getElementById("news-form-popup").classList.remove("hidden");
+// عرض الأخبار
+function renderNews(id, text, isTeacher) {
+  const div = document.createElement("div");
+  div.className = "news-item";
+  div.innerHTML = `<p>${text}</p>`;
+  
+  if (isTeacher) {
+    const delBtn = document.createElement("button");
+    delBtn.className = "delete-btn";
+    delBtn.textContent = "مسح";
+    delBtn.onclick = async () => {
+      await deleteDoc(doc(db, "news", id));
     };
-    document.getElementById("save-news-btn").onclick = addNews;
+    div.appendChild(delBtn);
   }
+  
+  newsContainer.appendChild(div);
+}
 
-  // عرض الأخبار للجميع
-  loadNews();
-  requestNotificationPermission();
+// إشعارات المتصفح
+function showNotification(msg) {
+  if (Notification.permission === "granted") {
+    new Notification("📢 خبر جديد", { body: msg });
+  }
+}
+
+// متابعة الأخبار لحظياً
+onSnapshot(collection(db, "news"), (snapshot) => {
+  newsContainer.innerHTML = "";
+  snapshot.forEach(docSnap => {
+    renderNews(docSnap.id, docSnap.data().text, teacherTools.classList.contains("visible"));
+  });
+  // لو طالب → اشعار بالخبر الجديد
+  if (!teacherTools.classList.contains("visible")) {
+    const latest = snapshot.docs[snapshot.docs.length - 1]?.data()?.text;
+    if (latest) showNotification(latest);
+  }
 });
+
+// تحقق تلقائي من الدور
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    const teacherRef = doc(db, `teachers/${user.uid}`);
+    const teacherSnap = await getDoc(teacherRef);
+    if (teacherSnap.exists()) {
+      teacherTools.classList.remove("hidden");
+      teacherTools.classList.add("visible");
+    }
+  } else {
+    console.warn("لم يتم تسجيل دخول المستخدم");
+  }
+});
+
+// إضافة خبر جديد
+addNewsBtn.onclick = async () => {
+  const text = newsText.value.trim();
+  if (!text) return;
+  await addDoc(collection(db, "news"), { text, createdAt: Date.now() });
+  newsText.value = "";
+};
+
+// طلب إذن الإشعارات
+if (Notification.permission !== "granted") {
+  Notification.requestPermission();
+}
