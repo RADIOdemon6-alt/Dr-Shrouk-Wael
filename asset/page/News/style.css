@@ -100,6 +100,30 @@ body {
 .fab.rotate {
   transform: rotate(45deg);
 }
-#toggle-form-btn {
-  display: none; /* مخفي افتراضيًا */
+.delete-btn {
+  background-color: #e74c3c; /* أحمر تحذيري */
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+}
+
+.delete-btn:hover {
+  background-color: #c0392b; /* أحمر أغمق عند المرور */
+  transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.delete-btn:active {
+  transform: scale(0.95);
+  background-color: #a93226;
+} 
+#toggle-form-btn,
+#add-news-form {
+  display: none; /* مخفيين افتراضيًا */
 }
