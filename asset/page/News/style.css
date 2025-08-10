@@ -5,23 +5,17 @@ body {
   color: #fff;
 }
 
-/* شريط علوي 3D */
+/* شريط علوي */
 .top-bar {
-  background: linear-gradient(145deg, #0a0a0a, #1a1a1a);
-  box-shadow: inset 0 -3px 5px rgba(0,0,0,0.6),
-              inset 0 3px 5px rgba(255,255,255,0.05),
-              0 5px 15px rgba(0,0,0,0.5);
+  background: #111;
   text-align: center;
   padding: 20px;
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  box-shadow: 0 0 10px #00f7ff;
 }
 .logo-text {
   font-size: 2rem;
-  font-weight: bold;
   color: #00f7ff;
-  text-shadow: 0 0 10px #00f7ff, 0 0 20px #00f7ff;
+  text-shadow: 0 0 10px #00f7ff;
 }
 
 /* الأخبار */
@@ -34,54 +28,75 @@ body {
   padding: 15px;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 247, 255, 0.3);
-  position: relative;
-  animation: fadeIn 0.5s ease-in-out;
-}
-.news-item button.delete-btn {
-  position: absolute;
-  left: 10px;
-  top: 10px;
-  background: red;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  padding: 3px 8px;
-  cursor: pointer;
+  animation: fadeIn 0.4s ease-in-out;
 }
 @keyframes fadeIn {
   from {opacity: 0; transform: translateY(10px);}
   to {opacity: 1; transform: translateY(0);}
 }
 
-/* أدوات المعلم */
-.teacher-tools {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+/* فورم إضافة الخبر */
+.add-news-form {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  background: #1a1a1a;
+  padding: 15px;
+  border-radius: 12px;
+  width: 250px;
+  box-shadow: 0 0 20px rgba(0, 247, 255, 0.5);
+  transform: scale(0);
+  opacity: 0;
+  transition: transform 0.4s ease, opacity 0.4s ease;
 }
-.teacher-tools textarea {
+.add-news-form.show {
+  transform: scale(1);
+  opacity: 1;
+}
+.add-news-form textarea {
   width: 100%;
   height: 60px;
   border-radius: 8px;
-  padding: 10px;
   border: none;
+  padding: 10px;
+  margin-bottom: 10px;
 }
-.teacher-tools button {
+.add-news-form button {
+  width: 100%;
+  padding: 8px;
   background: #00f7ff;
-  border: none;
-  padding: 10px;
   color: #000;
   font-weight: bold;
+  border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: 0.3s;
 }
-.teacher-tools button:hover {
-  background: #00d1dd;
+.add-news-form.explode {
+  animation: explode 0.5s forwards;
+}
+@keyframes explode {
+  0% {transform: scale(1); opacity: 1;}
+  50% {transform: scale(1.2); opacity: 0.7;}
+  100% {transform: scale(0); opacity: 0;}
 }
 
-/* إخفاء */
-.hidden {
-  display: none;
+/* زر الفتح/الغلق */
+.fab {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #00f7ff;
+  border: none;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 0 15px #00f7ff;
+  transition: transform 0.3s ease;
+}
+.fab.rotate {
+  transform: rotate(45deg);
 }
