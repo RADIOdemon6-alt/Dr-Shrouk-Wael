@@ -8,23 +8,28 @@
 </head>
 <body>
 
-  <!-- الشريط العلوي -->
   <header class="top-bar">
     <h1 class="logo-text">DR-SHROUK</h1>
   </header>
 
-  <!-- محتوى الصفحة -->
   <main>
     <div id="news-container" class="news-container"></div>
 
-    <!-- أدوات المعلم -->
-    <div id="teacher-tools" class="teacher-tools hidden">
-      <textarea id="news-text" placeholder="أدخل الخبر الجديد..."></textarea>
-      <button id="add-news-btn">➕ إضافة خبر</button>
+    <!-- فورم إضافة الخبر -->
+    <div id="add-news-form" class="add-news-form hidden">
+      <textarea id="news-text" placeholder="✏️ اكتب الخبر هنا..."></textarea>
+      <button id="submit-news-btn">إضافة خبر جديد</button>
     </div>
   </main>
 
-  <!-- Firebase + سكربت -->
+  <!-- زر الفتح/الغلق -->
+  <button id="toggle-form-btn" class="fab">
+    <svg id="fab-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="12" y1="5" x2="12" y2="19"/>
+      <line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>
+  </button>
+
   <script type="module" src="script.js"></script>
 </body>
 </html>
