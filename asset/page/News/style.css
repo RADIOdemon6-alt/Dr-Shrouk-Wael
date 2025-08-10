@@ -88,12 +88,11 @@ body {
   100% {transform: scale(0); opacity: 0;}
 }
 
-/* زر الفتح/الغلق */
 /* زر الفتح/الغلق (+) */
 .fab {
   position: fixed;
-  top: 90px; /* بدل bottom */
-  right: 20px;
+  bottom: 70px; /* نفس ارتفاع القايمة */
+  left: 20px; /* على اليسار */
   background: #00f7ff;
   border: none;
   border-radius: 50%;
