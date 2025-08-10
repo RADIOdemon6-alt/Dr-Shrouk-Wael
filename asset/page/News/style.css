@@ -1,127 +1,141 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
-
+/* إعادة ضبط */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
 }
 
 body {
-  background-color: #0B0D17;
+  background: #0d1117;
   color: white;
-  padding-bottom: 100px;
+  font-family: 'Tajawal', sans-serif;
+  line-height: 1.6;
+  padding-top: 80px;
 }
 
-/* ===== البار العلوي 3D ===== */
-.top-bar {
+/* البار العلوي */
+#top-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
+  height: 70px;
+  background: linear-gradient(145deg, #0b0f14, #12181f);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  box-shadow: inset 0 -4px 8px rgba(0, 229, 255, 0.3);
+}
+
+#top-bar h1 {
+  font-size: 28px;
+  color: #00e5ff;
+  text-shadow: 0 2px 2px rgba(0,0,0,0.8),
+               0 4px 8px rgba(0, 229, 255, 0.6);
+  letter-spacing: 2px;
+}
+
+/* النماذج */
+.form {
+  background: #161b22;
   padding: 20px;
-  text-align: center;
-  background: linear-gradient(145deg, #0B0D17, #111522);
-  box-shadow: inset 2px 2px 6px #000, inset -2px -2px 6px #1a1e2e;
-}
-
-.top-bar h1 {
-  font-size: 2rem;
-  background: linear-gradient(135deg, #00FFF7, #C084FC);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.7);
-}
-
-/* ===== المكعبات ===== */
-#news-container {
-  width: 90%;
-  max-width: 500px;
+  width: 300px;
   margin: 20px auto;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  transition: transform 0.3s ease;
 }
 
-.news-cube {
-  height: 20px;
-  overflow: hidden;
-  background: rgba(255,255,255,0.05);
-  border-radius: 8px;
-  margin-bottom: 10px;
-  cursor: pointer;
-  transition: height 0.3s ease;
+.form h2 {
+  text-align: center;
+  margin-bottom: 15px;
 }
 
-.news-cube.open {
-  height: auto;
-  padding: 10px;
-}
-
-.news-title {
-  padding: 5px 10px;
-  background: linear-gradient(135deg, #00FFF7, #00FFAB);
-  font-weight: bold;
-  border-radius: 8px 8px 0 0;
-  color: black;
-}
-
-.news-content {
-  padding: 10px;
-  font-size: 14px;
-}
-
-/* ===== زر الإضافة ===== */
-#add-news-btn {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: linear-gradient(135deg, #00FFF7, #00FFAB);
-  color: black;
-  font-size: 2rem;
-  border: none;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  cursor: pointer;
-  box-shadow: 0 0 10px rgba(0,255,171,0.5);
-}
-
-/* ===== نافذة الإضافة ===== */
-.popup {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(255,255,255,0.1);
-  padding: 20px;
-  border-radius: 10px;
-  backdrop-filter: blur(10px);
-}
-
-.popup input, .popup textarea {
+.form input, .form textarea {
   width: 100%;
-  margin-bottom: 10px;
-  padding: 8px;
+  padding: 10px;
+  margin: 8px 0;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
+  outline: none;
+  background: #0d1117;
+  color: white;
 }
 
-.popup button {
-  padding: 8px;
-  margin-right: 5px;
+.form button {
+  width: 100%;
+  padding: 10px;
+  background: #00e5ff;
   border: none;
-  border-radius: 5px;
-  background: linear-gradient(135deg, #00FFF7, #00FFAB);
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.form button:hover {
+  background: #00b8cc;
+}
+
+/* الأخبار */
+#news-section {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 10px;
+}
+
+.news-item {
+  background: #161b22;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  position: relative;
+}
+
+.news-item button {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: crimson;
+  border: none;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
   cursor: pointer;
 }
 
+.news-item button:hover {
+  background: darkred;
+}
+
+/* مكعبات 3D خلفية */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    radial-gradient(#00e5ff33 1px, transparent 1px),
+    radial-gradient(#00e5ff33 1px, transparent 1px);
+  background-size: 50px 50px;
+  background-position: 0 0, 25px 25px;
+  z-index: -1;
+  animation: moveBg 10s linear infinite;
+}
+
+@keyframes moveBg {
+  0% { background-position: 0 0, 25px 25px; }
+  100% { background-position: 50px 50px, 75px 75px; }
+}
+
+/* إخفاء العناصر */
 .hidden {
   display: none;
 }
 
-/* ===== إشعار داخل الموقع ===== */
-#in-site-notification {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background: #00FFAB;
-  color: black;
-  padding: 10px 20px;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0,255,171,0.5);
+.active {
+  display: block;
 }
