@@ -28,6 +28,7 @@ const submitBtn = document.getElementById("submit-news-btn");
 
 let isTeacher = false;
 let formVisible = false;
+let lastNewsId = null; // لتفادي تكرار الإشعارات
 
 // 🔹 زر إظهار/إخفاء الفورم مع أنيميشن
 toggleBtn.addEventListener("click", () => {
@@ -56,7 +57,7 @@ submitBtn.addEventListener("click", async () => {
   newsText.value = "";
 });
 
-// 🔹 عرض الأخبار مع زر الحذف للمعلم
+// 🔹 عرض الأخبار
 function renderNews(id, text) {
   const div = document.createElement("div");
   div.className = "news-item";
@@ -78,17 +79,22 @@ function renderNews(id, text) {
 // 🔹 متابعة الأخبار لحظياً
 onSnapshot(collection(db, "news"), (snapshot) => {
   newsContainer.innerHTML = "";
-  let latest = null;
+  let latestId = null;
+  let latestText = null;
 
   snapshot.forEach(docSnap => {
     const data = docSnap.data();
     renderNews(docSnap.id, data.text);
-    latest = data.text;
+    if (!latestId || data.createdAt > latestId) {
+      latestId = docSnap.id;
+      latestText = data.text;
+    }
   });
 
   // إشعار للطلاب عند إضافة خبر جديد
-  if (!isTeacher && latest) {
-    showNotification(latest);
+  if (!isTeacher && latestId && latestId !== lastNewsId) {
+    lastNewsId = latestId;
+    showNotification(latestText);
   }
 });
 
@@ -103,11 +109,30 @@ if (Notification.permission !== "granted") {
   Notification.requestPermission();
 }
 
-// 🔹 تحقق تلقائي من دور المستخدم
+// 🔹 تحقق تلقائي من دور المستخدم بناء على تسجيل الدخول
 onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    const teacherRef = doc(db, `teachers/${user.uid}`);
-    const teacherSnap = await getDoc(teacherRef);
-    isTeacher = teacherSnap.exists();
+  if (!user) {
+    isTeacher = false;
+    toggleBtn.style.display = "none";
+    return;
+  }
+
+  try {
+    // تحقق إذا كان معلم
+    const teacherSnap = await getDoc(doc(db, "teachers", user.uid));
+    if (teacherSnap.exists()) {
+      isTeacher = true;
+      toggleBtn.style.display = "block"; // إظهار زر إضافة الأخبار
+      return;
+    }
+
+    // إذا مش معلم → طالب
+    isTeacher = false;
+    toggleBtn.style.display = "none";
+
+  } catch (err) {
+    console.error("خطأ أثناء تحديد دور المستخدم:", err);
+    isTeacher = false;
+    toggleBtn.style.display = "none";
   }
 });
