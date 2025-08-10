@@ -24,7 +24,7 @@ const toggleBtn = document.getElementById("toggle-form-btn");
 const form = document.getElementById("add-news-form");
 const submitBtn = document.getElementById("submit-news-btn");
 
-let isTeacher = false; // علشان نعرف الدور
+let isTeacher = false;
 
 // عرض خبر
 function renderNews(id, text) {
@@ -44,6 +44,28 @@ function renderNews(id, text) {
   }
 
   newsContainer.appendChild(div);
+}
+
+// متابعة الأخبار لحظياً للجميع
+onSnapshot(collection(db, "news"), (snapshot) => {
+  const oldCount = newsContainer.childElementCount;
+  newsContainer.innerHTML = "";
+  snapshot.forEach(docSnap => {
+    renderNews(docSnap.id, docSnap.data().text);
+  });
+
+  // إشعار لو طالب وجا خبر جديد
+  if (!isTeacher && snapshot.size > oldCount) {
+    const latest = snapshot.docs[snapshot.docs.length - 1]?.data()?.text;
+    if (latest) showNotification(latest);
+  }
+});
+
+// إشعارات
+function showNotification(msg) {
+  if (Notification.permission === "granted") {
+    new Notification("📢 خبر جديد", { body: msg });
+  }
 }
 
 // فتح/غلق الفورم
@@ -73,30 +95,7 @@ submitBtn.addEventListener("click", async () => {
   newsText.value = "";
 });
 
-// متابعة الأخبار لحظياً
-function startNewsListener() {
-  onSnapshot(collection(db, "news"), (snapshot) => {
-    newsContainer.innerHTML = "";
-    snapshot.forEach(docSnap => {
-      renderNews(docSnap.id, docSnap.data().text);
-    });
-
-    // لو طالب → إشعار بالخبر الجديد
-    if (!isTeacher) {
-      const latest = snapshot.docs[snapshot.docs.length - 1]?.data()?.text;
-      if (latest) showNotification(latest);
-    }
-  });
-}
-
-// إشعارات
-function showNotification(msg) {
-  if (Notification.permission === "granted") {
-    new Notification("📢 خبر جديد", { body: msg });
-  }
-}
-
-// التحقق من الدور
+// التحقق من الدور (معلم أو لا)
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     const teacherRef = doc(db, `teachers/${user.uid}`);
@@ -106,9 +105,6 @@ onAuthStateChanged(auth, async (user) => {
       teacherTools.classList.remove("hidden");
       teacherTools.classList.add("visible");
     }
-    startNewsListener();
-  } else {
-    console.warn("لم يتم تسجيل دخول المستخدم");
   }
 });
 
