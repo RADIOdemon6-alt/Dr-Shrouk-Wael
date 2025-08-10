@@ -1,6 +1,10 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { 
+  getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, getDoc 
+} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
+// إعداد Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBSqV0VQGR3048_bhhDx7NYboe2jaYc85Y",
   authDomain: "dr-shrouk-wael.firebaseapp.com",
@@ -13,15 +17,19 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
+// عناصر DOM
 const newsContainer = document.getElementById("news-container");
 const form = document.getElementById("add-news-form");
 const toggleBtn = document.getElementById("toggle-form-btn");
 const newsText = document.getElementById("news-text");
 const submitBtn = document.getElementById("submit-news-btn");
 
-// زر الفتح والغلق
 let formVisible = false;
+let isTeacher = false;
+
+// زر الفتح/الغلق للفورم
 toggleBtn.addEventListener("click", () => {
   formVisible = !formVisible;
   if (formVisible) {
@@ -47,13 +55,64 @@ submitBtn.addEventListener("click", async () => {
   newsText.value = "";
 });
 
-// عرض الأخبار
+// عرض الأخبار + زر المسح للمعلم
+function renderNews(id, text) {
+  const div = document.createElement("div");
+  div.className = "news-item";
+  div.textContent = text;
+
+  if (isTeacher) {
+    const delBtn = document.createElement("button");
+    delBtn.className = "delete-btn";
+    delBtn.textContent = "🗑";
+    delBtn.onclick = async () => {
+      await deleteDoc(doc(db, "news", id));
+    };
+    div.appendChild(delBtn);
+  }
+
+  newsContainer.appendChild(div);
+}
+
+// إشعارات للطلاب فقط
+function showNotification(msg) {
+  if (!isTeacher && Notification.permission === "granted") {
+    new Notification("📢 خبر جديد", { body: msg });
+  }
+}
+
+// متابعة الأخبار
 onSnapshot(collection(db, "news"), (snapshot) => {
   newsContainer.innerHTML = "";
   snapshot.forEach(docSnap => {
-    const div = document.createElement("div");
-    div.className = "news-item";
-    div.textContent = docSnap.data().text;
-    newsContainer.appendChild(div);
+    renderNews(docSnap.id, docSnap.data().text);
   });
+
+  // إشعار بالخبر الأحدث للطلاب
+  if (!isTeacher) {
+    const latest = snapshot.docs[snapshot.docs.length - 1]?.data()?.text;
+    if (latest) showNotification(latest);
+  }
 });
+
+// تحقق من دور المستخدم
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    const teacherRef = doc(db, "teachers", user.uid);
+    const teacherSnap = await getDoc(teacherRef);
+    if (teacherSnap.exists()) {
+      isTeacher = true;
+      toggleBtn.style.display = "flex";
+    } else {
+      isTeacher = false;
+      toggleBtn.style.display = "none";
+    }
+  } else {
+    console.warn("لم يتم تسجيل دخول المستخدم");
+  }
+});
+
+// طلب إذن الإشعارات
+if (Notification.permission !== "granted") {
+  Notification.requestPermission();
+               }
