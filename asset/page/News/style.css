@@ -100,3 +100,6 @@ body {
 .fab.rotate {
   transform: rotate(45deg);
 }
+#toggle-form-btn {
+  display: none; /* مخفي افتراضيًا */
+}
