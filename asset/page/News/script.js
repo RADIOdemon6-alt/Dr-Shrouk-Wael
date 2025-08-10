@@ -1,5 +1,7 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import {
+  getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, getDoc
+} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
 // إعداد Firebase
@@ -17,63 +19,22 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+// عناصر الصفحة
 const newsContainer = document.getElementById("news-container");
-const teacherTools = document.getElementById("teacher-tools");
-const newsText = document.getElementById("news-text");
 const toggleBtn = document.getElementById("toggle-form-btn");
 const form = document.getElementById("add-news-form");
+const newsText = document.getElementById("news-text");
 const submitBtn = document.getElementById("submit-news-btn");
 
 let isTeacher = false;
-
-// عرض خبر
-function renderNews(id, text) {
-  const div = document.createElement("div");
-  div.className = "news-item";
-  div.innerHTML = `<p>${text}</p>`;
-
-  // زر الحذف يظهر للمعلم فقط
-  if (isTeacher) {
-    const delBtn = document.createElement("button");
-    delBtn.className = "delete-btn";
-    delBtn.textContent = "🗑";
-    delBtn.onclick = async () => {
-      await deleteDoc(doc(db, "news", id));
-    };
-    div.appendChild(delBtn);
-  }
-
-  newsContainer.appendChild(div);
-}
-
-// متابعة الأخبار لحظياً للجميع
-onSnapshot(collection(db, "news"), (snapshot) => {
-  const oldCount = newsContainer.childElementCount;
-  newsContainer.innerHTML = "";
-  snapshot.forEach(docSnap => {
-    renderNews(docSnap.id, docSnap.data().text);
-  });
-
-  // إشعار لو طالب وجا خبر جديد
-  if (!isTeacher && snapshot.size > oldCount) {
-    const latest = snapshot.docs[snapshot.docs.length - 1]?.data()?.text;
-    if (latest) showNotification(latest);
-  }
-});
-
-// إشعارات
-function showNotification(msg) {
-  if (Notification.permission === "granted") {
-    new Notification("📢 خبر جديد", { body: msg });
-  }
-}
-
-// فتح/غلق الفورم
 let formVisible = false;
+
+// 🔹 زر إظهار/إخفاء الفورم مع أنيميشن
 toggleBtn.addEventListener("click", () => {
   formVisible = !formVisible;
+  toggleBtn.classList.toggle("rotate", formVisible);
+
   if (formVisible) {
-    toggleBtn.classList.add("rotate");
     form.classList.remove("hidden");
     setTimeout(() => form.classList.add("show"), 10);
   } else {
@@ -83,32 +44,70 @@ toggleBtn.addEventListener("click", () => {
       form.classList.add("hidden");
       form.classList.remove("explode");
     }, 500);
-    toggleBtn.classList.remove("rotate");
   }
 });
 
-// إضافة خبر جديد
+// 🔹 إضافة خبر جديد
 submitBtn.addEventListener("click", async () => {
   const text = newsText.value.trim();
   if (!text) return;
+
   await addDoc(collection(db, "news"), { text, createdAt: Date.now() });
   newsText.value = "";
 });
 
-// التحقق من الدور (معلم أو لا)
+// 🔹 عرض الأخبار مع زر الحذف للمعلم
+function renderNews(id, text) {
+  const div = document.createElement("div");
+  div.className = "news-item";
+  div.innerHTML = `<p>${text}</p>`;
+
+  if (isTeacher) {
+    const delBtn = document.createElement("button");
+    delBtn.className = "delete-btn";
+    delBtn.textContent = "مسح";
+    delBtn.onclick = async () => {
+      await deleteDoc(doc(db, "news", id));
+    };
+    div.appendChild(delBtn);
+  }
+
+  newsContainer.appendChild(div);
+}
+
+// 🔹 متابعة الأخبار لحظياً
+onSnapshot(collection(db, "news"), (snapshot) => {
+  newsContainer.innerHTML = "";
+  let latest = null;
+
+  snapshot.forEach(docSnap => {
+    const data = docSnap.data();
+    renderNews(docSnap.id, data.text);
+    latest = data.text;
+  });
+
+  // إشعار للطلاب عند إضافة خبر جديد
+  if (!isTeacher && latest) {
+    showNotification(latest);
+  }
+});
+
+// 🔹 إشعارات المتصفح
+function showNotification(msg) {
+  if (Notification.permission === "granted") {
+    new Notification("📢 خبر جديد", { body: msg });
+  }
+}
+
+if (Notification.permission !== "granted") {
+  Notification.requestPermission();
+}
+
+// 🔹 تحقق تلقائي من دور المستخدم
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     const teacherRef = doc(db, `teachers/${user.uid}`);
     const teacherSnap = await getDoc(teacherRef);
-    if (teacherSnap.exists()) {
-      isTeacher = true;
-      teacherTools.classList.remove("hidden");
-      teacherTools.classList.add("visible");
-    }
+    isTeacher = teacherSnap.exists();
   }
 });
-
-// طلب إذن الإشعارات
-if (Notification.permission !== "granted") {
-  Notification.requestPermission();
-}
