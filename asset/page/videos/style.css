@@ -1,8 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap');
 
 * {
-  margin: 0;
-  padding: 0;
+  margin: 0; padding: 0;
   box-sizing: border-box;
   font-family: 'Poppins', sans-serif;
 }
@@ -18,86 +17,113 @@ body {
   overflow-x: hidden;
 }
 
-/* ======= Top Bar ======= */
+/* ===== الشريط العلوي ===== */
 .top-bar {
   width: 100%;
-  padding: 20px;
+  height: 25vh;
   background: linear-gradient(135deg, #00FFF7, #C084FC);
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   clip-path: polygon(0 0, 100% 0, 100% 80%, 0 100%);
-  box-shadow:
-    inset 4px 4px 8px rgba(0,0,0,0.3),
-    inset -4px -4px 8px rgba(255,255,255,0.15);
 }
-
 .top-bar h1 {
-  font-size: 2rem;
+  font-size: 2.5rem;
   color: #0B0D17;
   text-shadow: 0 0 8px rgba(0,255,171,0.7);
   letter-spacing: 2px;
 }
 
-#toggleFormBtn {
-  background: none;
+/* ===== زر الإضافة / الإغلاق ===== */
+#toggle-form-btn {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #00FFF7, #C084FC);
+  border-radius: 50%;
   border: none;
+  box-shadow: 0 0 15px rgba(0, 255, 171, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
   cursor: pointer;
-  width: 40px;
-  height: 40px;
-  position: relative;
+  transition: transform 0.3s ease;
+  z-index: 200;
 }
 
-#toggleFormBtn svg {
-  width: 100%;
-  height: 100%;
+#toggle-form-btn svg {
+  width: 28px;
+  height: 28px;
+  fill: none;
+  stroke: #0B0D17;
+  stroke-width: 2;
+  stroke-linecap: round;
   transition: transform 0.3s ease;
 }
 
-#toggleFormBtn.active .plus-icon {
+#toggle-form-btn.rotate svg {
   transform: rotate(45deg);
 }
 
-/* ======= Form ======= */
-#videoFormContainer {
-  display: none;
-  width: 90%;
-  max-width: 400px;
-  margin: 20px auto;
-  padding: 20px;
-  background: rgba(255,255,255,0.07);
-  border-radius: 15px;
-  box-shadow:
-    inset 2px 2px 5px rgba(0,0,0,0.4),
-    inset -2px -2px 5px rgba(255,255,255,0.1);
-  backdrop-filter: blur(10px);
-  animation: fadeIn 0.4s ease forwards;
+/* ===== الفورم ===== */
+#add-video-form {
+  position: fixed;
+  bottom: 160px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  padding: 15px;
+  width: 260px;
+  box-shadow: 0 0 20px rgba(0, 255, 171, 0.4);
+  border: 1px solid rgba(0, 255, 171, 0.3);
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.4s ease;
+  z-index: 150;
 }
 
-#videoFormContainer input,
-#videoFormContainer button {
+#add-video-form.show {
+  opacity: 1;
+  transform: scale(1);
+}
+
+#add-video-form.hidden {
+  display: none;
+}
+
+#add-video-form input {
   width: 100%;
   margin-bottom: 10px;
-  padding: 10px;
+  padding: 8px;
+  border-radius: 10px;
   border: none;
-  border-radius: 8px;
-}
-
-#videoFormContainer input {
+  outline: none;
   background: rgba(255,255,255,0.1);
   color: white;
 }
 
-#videoFormContainer button {
+#submit-video-btn {
+  width: 100%;
+  padding: 8px;
+  border-radius: 10px;
+  border: none;
   background: linear-gradient(135deg, #00FFF7, #00FFAB);
   cursor: pointer;
+  transition: transform 0.2s ease;
 }
 
-/* ======= Video List ======= */
-.video-list {
+#submit-video-btn:hover {
+  transform: scale(1.05);
+}
+
+/* ===== الفيديوهات ===== */
+#video-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 15px;
   width: 90%;
   max-width: 1200px;
   margin-top: 20px;
@@ -106,57 +132,42 @@ body {
 .video-card {
   background: rgba(255,255,255,0.07);
   border-radius: 15px;
-  overflow: hidden;
-  box-shadow:
-    0 15px 15px -10px rgba(0,0,0,0.4),
-    inset 4px 4px 6px rgba(0,0,0,0.5),
-    inset -4px -4px 6px rgba(255,255,255,0.1);
-  transform: translateY(15px) scale(0.8);
-  opacity: 0;
-  animation: fadeUp 0.6s ease forwards;
-}
-
-.video-header {
-  background: rgba(0,0,0,0.3);
-  padding: 8px;
+  padding: 10px;
   text-align: center;
-  font-size: 0.9rem;
-  color: #00FFF7;
-  box-shadow:
-    inset 2px 2px 4px rgba(0,0,0,0.4),
-    inset -2px -2px 4px rgba(255,255,255,0.1);
+  box-shadow: 0 0 10px rgba(0,255,171,0.3);
+  backdrop-filter: blur(10px);
+  transition: transform 0.3s ease;
 }
 
-.video-card iframe {
-  width: 100%;
-  height: 150px;
-  border: none;
-  display: block;
+.video-card:hover {
+  transform: scale(1.03);
 }
 
-/* ======= Delete Button for Teachers ======= */
+.video-card h3 {
+  margin-top: 10px;
+  font-size: 1rem;
+}
+
+/* زر الحذف */
 .delete-btn {
-  display: block;
-  width: 100%;
+  margin-top: 10px;
+  padding: 6px 12px;
   background: #ff4d4d;
-  color: white;
   border: none;
-  padding: 8px;
+  border-radius: 8px;
+  color: white;
   cursor: pointer;
-  border-radius: 0 0 15px 15px;
-  transition: background 0.3s;
+  transition: background 0.3s ease;
 }
-
 .delete-btn:hover {
-  background: #e60000;
+  background: #cc0000;
 }
 
-/* ======= Animations ======= */
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.9);}
-  to { opacity: 1; transform: scale(1);}
+/* أنيميشن */
+.fade-in {
+  animation: fadeInScale 0.5s ease forwards;
 }
-
-@keyframes fadeUp {
-  to { transform: translateY(0) scale(1); opacity: 1; }
-}
+@keyframes fadeInScale {
+  from { opacity: 0; transform: scale(0.85); }
+  to { opacity: 1; transform: scale(1); }
+  }
