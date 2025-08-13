@@ -1,1 +1,36 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>عرض الفيديوهات - DR-SHROUK</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
+  <!-- الشريط العلوي -->
+  <header class="top-bar">
+    <h1>DR-SHROUK</h1>
+    <button id="toggle-form-btn" class="add-btn" title="إضافة فيديو">
+      <svg id="plus-icon" viewBox="0 0 24 24" width="30" height="30">
+        <path fill="currentColor" d="M12 5v14m-7-7h14"/>
+      </svg>
+      <svg id="close-icon" viewBox="0 0 24 24" width="30" height="30">
+        <path fill="currentColor" d="M6 6l12 12M6 18L18 6"/>
+      </svg>
+    </button>
+  </header>
+
+  <!-- فورم الإضافة -->
+  <form id="add-video-form" class="hidden">
+    <input type="text" id="video-name" placeholder="اسم الفيديو">
+    <input type="url" id="video-url" placeholder="رابط يوتيوب">
+    <button type="button" id="submit-video-btn">إضافة</button>
+  </form>
+
+  <!-- حاوية الفيديوهات -->
+  <div id="video-container"></div>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
