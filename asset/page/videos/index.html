@@ -1,36 +1,36 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>عرض الفيديوهات - DR-SHROUK</title>
+  <title>dr-shrouk-wael</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <!-- الشريط العلوي -->
-  <header class="top-bar">
+  <div class="top-bar">
     <h1>DR-SHROUK</h1>
-    <button id="toggle-form-btn" class="add-btn" title="إضافة فيديو">
-      <svg id="plus-icon" viewBox="0 0 24 24" width="30" height="30">
-        <path fill="currentColor" d="M12 5v14m-7-7h14"/>
-      </svg>
-      <svg id="close-icon" viewBox="0 0 24 24" width="30" height="30">
-        <path fill="currentColor" d="M6 6l12 12M6 18L18 6"/>
-      </svg>
-    </button>
-  </header>
-
-  <!-- فورم الإضافة -->
-  <form id="add-video-form" class="hidden">
-    <input type="text" id="video-name" placeholder="اسم الفيديو">
-    <input type="url" id="video-url" placeholder="رابط يوتيوب">
-    <button type="button" id="submit-video-btn">إضافة</button>
-  </form>
+  </div>
 
   <!-- حاوية الفيديوهات -->
   <div id="video-container"></div>
 
-  <script type="module" src="script.js"></script>
+  <!-- زر الإضافة (+ / ×) -->
+  <button id="toggle-form-btn">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+      <line x1="12" y1="5" x2="12" y2="19"/>
+      <line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>
+  </button>
+
+  <!-- فورم إضافة الفيديو -->
+  <div id="add-video-form" class="hidden">
+    <input type="text" id="video-title" placeholder="عنوان الفيديو">
+    <input type="text" id="video-link" placeholder="رابط الفيديو (YouTube Embed)">
+    <button id="submit-video-btn">إضافة</button>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
