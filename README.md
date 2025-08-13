@@ -5,11 +5,20 @@
 
 ---
 
+## 🏆 الشارات
+![HTML5](https://img.shields.io/badge/HTML5-orange?style=for-the-badge&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-blue?style=for-the-badge&logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-yellow?style=for-the-badge&logo=javascript&logoColor=black)
+![Firebase](https://img.shields.io/badge/Firebase-ffca28?style=for-the-badge&logo=firebase&logoColor=black)
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+
+---
+
 ## 🚀 المميزات
-- 📺 **مشاهدة الفيديوهات** من أي جهاز بسهولة.
-- 🔐 **نظام دخول خاص بالمعلمين والطلاب**.
-- ⚡ **تحديث لحظي** للفيديوهات باستخدام Firebase.
-- 🎨 **تصميم عصري** باستخدام HTML + CSS + JS.
+- 📺 **مشاهدة الفيديوهات** بسهولة من أي جهاز.
+- 🔐 **دخول خاص بالمعلمين والطلاب**.
+- ⚡ **تحديث لحظي** باستخدام Firebase Firestore.
+- 🎨 **تصميم عصري** بـ HTML + CSS + JS.
 
 ---
 
@@ -23,5 +32,3 @@
 | **Firebase Auth** | إدارة المستخدمين |
 
 ---
-
-## 📂 هيكل المشروع
