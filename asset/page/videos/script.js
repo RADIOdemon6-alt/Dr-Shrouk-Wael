@@ -1,4 +1,4 @@
-/ ====== Firebase إعداد =====
+// ===== Firebase إعداد =====
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
 import {
   getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, getDoc
@@ -23,8 +23,8 @@ const auth = getAuth(app);
 const videoContainer = document.getElementById("video-container");
 const toggleBtn = document.getElementById("toggle-form-btn");
 const form = document.getElementById("add-video-form");
-const videoUrlInput = document.getElementById("video-link");
 const videoNameInput = document.getElementById("video-title");
+const videoUrlInput = document.getElementById("video-link");
 const submitBtn = document.getElementById("submit-video-btn");
 
 let isTeacher = false;
@@ -33,36 +33,30 @@ let formVisible = false;
 // ===== تحويل رابط YouTube إلى embed =====
 function getEmbedUrl(url) {
   try {
-    let videoId;
     const ytRegex = /(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
     const match = url.match(ytRegex);
     if (match && match[1]) {
-      videoId = match[1];
-      return `https://www.youtube.com/embed/${videoId}`;
+      return `https://www.youtube.com/embed/${match[1]}`;
     }
-    // لو رابط فيه باراميترات إضافية
     const urlObj = new URL(url);
     if (urlObj.hostname.includes("youtube.com") && urlObj.searchParams.get("v")) {
-      videoId = urlObj.searchParams.get("v");
-      return `https://www.youtube.com/embed/${videoId}`;
+      return `https://www.youtube.com/embed/${urlObj.searchParams.get("v")}`;
     }
-    return url; // fallback
+    return url;
   } catch {
     return url;
   }
 }
 
-// ===== أنيميشن زر الإضافة =====
+// ===== فتح/إغلاق الفورم مع أنيميشن زر الإضافة =====
 toggleBtn.addEventListener("click", () => {
   formVisible = !formVisible;
-  toggleBtn.classList.toggle("rotate", formVisible);
+  toggleBtn.classList.toggle("active", formVisible);
 
   if (formVisible) {
-    toggleBtn.innerHTML = "&#10005;"; // ×
     form.classList.remove("hidden");
     setTimeout(() => form.classList.add("show"), 10);
   } else {
-    toggleBtn.innerHTML = "+"; // +
     form.classList.remove("show");
     form.classList.add("explode");
     setTimeout(() => {
@@ -73,7 +67,9 @@ toggleBtn.addEventListener("click", () => {
 });
 
 // ===== إضافة فيديو جديد =====
-submitBtn.addEventListener("click", async () => {
+submitBtn.addEventListener("click", async (e) => {
+  e.preventDefault(); // منع إعادة تحميل الصفحة
+
   const url = videoUrlInput.value.trim();
   const name = videoNameInput.value.trim();
   if (!url || !name) return;
