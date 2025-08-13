@@ -1,8 +1,11 @@
+// ===== Firebase إعداد =====
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import {
+  getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, getDoc
+} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
-// إعداد Firebase
+// إعدادات Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBSqV0VQGR3048_bhhDx7NYboe2jaYc85Y",
   authDomain: "dr-shrouk-wael.firebaseapp.com",
@@ -12,6 +15,7 @@ const firebaseConfig = {
   appId: "1:1053856451278:web:877ed5b22f6a8ecaee9e9f",
   measurementId: "G-1556HS2GRJ"
 };
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
@@ -19,49 +23,88 @@ const auth = getAuth(app);
 const videoContainer = document.getElementById("video-container");
 const toggleBtn = document.getElementById("toggle-form-btn");
 const form = document.getElementById("add-video-form");
-const videoName = document.getElementById("video-name");
-const videoUrl = document.getElementById("video-url");
+const videoUrlInput = document.getElementById("video-url");
+const videoNameInput = document.getElementById("video-name");
 const submitBtn = document.getElementById("submit-video-btn");
 
 let isTeacher = false;
 let formVisible = false;
 
-// تبديل إظهار الفورم
+// ===== تحويل رابط YouTube إلى embed =====
+function getEmbedUrl(url) {
+  try {
+    let videoId;
+    const ytRegex = /(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    const match = url.match(ytRegex);
+    if (match && match[1]) {
+      videoId = match[1];
+      return `https://www.youtube.com/embed/${videoId}`;
+    }
+    // لو رابط فيه باراميترات إضافية
+    const urlObj = new URL(url);
+    if (urlObj.hostname.includes("youtube.com") && urlObj.searchParams.get("v")) {
+      videoId = urlObj.searchParams.get("v");
+      return `https://www.youtube.com/embed/${videoId}`;
+    }
+    return url; // fallback
+  } catch {
+    return url;
+  }
+}
+
+// ===== أنيميشن زر الإضافة =====
 toggleBtn.addEventListener("click", () => {
   formVisible = !formVisible;
-  toggleBtn.classList.toggle("active", formVisible);
-  form.classList.toggle("show", formVisible);
+  toggleBtn.classList.toggle("rotate", formVisible);
+
+  if (formVisible) {
+    toggleBtn.innerHTML = "&#10005;"; // ×
+    form.classList.remove("hidden");
+    setTimeout(() => form.classList.add("show"), 10);
+  } else {
+    toggleBtn.innerHTML = "+"; // +
+    form.classList.remove("show");
+    form.classList.add("explode");
+    setTimeout(() => {
+      form.classList.add("hidden");
+      form.classList.remove("explode");
+    }, 500);
+  }
 });
 
-// إضافة فيديو
+// ===== إضافة فيديو جديد =====
 submitBtn.addEventListener("click", async () => {
-  const name = videoName.value.trim();
-  const url = videoUrl.value.trim();
-  if (!name || !url) return;
-  
-  await addDoc(collection(db, "videos"), { name, url, createdAt: Date.now() });
-  videoName.value = "";
-  videoUrl.value = "";
-  formVisible = false;
-  toggleBtn.classList.remove("active");
-  form.classList.remove("show");
+  const url = videoUrlInput.value.trim();
+  const name = videoNameInput.value.trim();
+  if (!url || !name) return;
+
+  await addDoc(collection(db, "videos"), {
+    url,
+    name,
+    createdAt: Date.now()
+  });
+
+  videoUrlInput.value = "";
+  videoNameInput.value = "";
+  toggleBtn.click(); // إغلاق الفورم بعد الإضافة
 });
 
-// عرض الفيديوهات
+// ===== عرض الفيديوهات =====
 function renderVideo(id, name, url) {
   const card = document.createElement("div");
-  card.className = "video-card";
+  card.className = "video-card fade-in";
 
-  // استخراج embed link
-  let embedUrl = url;
-  if (url.includes("watch?v=")) {
-    embedUrl = url.replace("watch?v=", "embed/");
-  }
+  const iframe = document.createElement("iframe");
+  iframe.src = getEmbedUrl(url);
+  iframe.width = "100%";
+  iframe.height = "150";
+  iframe.allowFullscreen = true;
 
-  card.innerHTML = `
-    <div class="video-title">${name}</div>
-    <iframe src="${embedUrl}" allowfullscreen></iframe>
-  `;
+  const title = document.createElement("h3");
+  title.textContent = name;
+
+  card.appendChild(iframe);
+  card.appendChild(title);
 
   if (isTeacher) {
     const delBtn = document.createElement("button");
@@ -74,10 +117,9 @@ function renderVideo(id, name, url) {
   }
 
   videoContainer.appendChild(card);
-  setTimeout(() => card.classList.add("show"), 50);
 }
 
-// متابعة الفيديوهات لحظياً
+// ===== متابعة التحديثات لحظياً =====
 onSnapshot(collection(db, "videos"), (snapshot) => {
   videoContainer.innerHTML = "";
   snapshot.forEach(docSnap => {
@@ -86,7 +128,7 @@ onSnapshot(collection(db, "videos"), (snapshot) => {
   });
 });
 
-// تحقق من دور المستخدم
+// ===== التحقق من دور المستخدم =====
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     isTeacher = false;
@@ -94,13 +136,19 @@ onAuthStateChanged(auth, async (user) => {
     form.style.display = "none";
     return;
   }
-  const { getDoc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
-  const teacherSnap = await getDoc(doc(db, "teachers", user.uid));
-  if (teacherSnap.exists()) {
-    isTeacher = true;
-    toggleBtn.style.display = "block";
-    form.style.display = "block";
-  } else {
+
+  try {
+    const teacherSnap = await getDoc(doc(db, "teachers", user.uid));
+    if (teacherSnap.exists()) {
+      isTeacher = true;
+      toggleBtn.style.display = "block";
+      return;
+    }
+    isTeacher = false;
+    toggleBtn.style.display = "none";
+    form.style.display = "none";
+  } catch (err) {
+    console.error("خطأ أثناء تحديد دور المستخدم:", err);
     isTeacher = false;
     toggleBtn.style.display = "none";
     form.style.display = "none";
