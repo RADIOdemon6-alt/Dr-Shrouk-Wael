@@ -1,4 +1,4 @@
-// ===== Firebase إعداد =====
+/ ====== Firebase إعداد =====
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
 import {
   getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, getDoc
@@ -23,8 +23,8 @@ const auth = getAuth(app);
 const videoContainer = document.getElementById("video-container");
 const toggleBtn = document.getElementById("toggle-form-btn");
 const form = document.getElementById("add-video-form");
-const videoUrlInput = document.getElementById("video-url");
-const videoNameInput = document.getElementById("video-name");
+const videoUrlInput = document.getElementById("video-link");
+const videoNameInput = document.getElementById("video-title");
 const submitBtn = document.getElementById("submit-video-btn");
 
 let isTeacher = false;
