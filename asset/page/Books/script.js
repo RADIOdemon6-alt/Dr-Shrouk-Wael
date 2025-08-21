@@ -1,6 +1,6 @@
 const pdfFiles = [
   { name: "ملخص-دكتوره-شروق", file: "DR SHROUK.pdf" },
-  { name: "كتاب-الكيمياء", file: "chemistry.pdf" }
+  { name: "ملخص-الحديد", file: "ميس شروق.pdf" }
 ];
 
 const pdfList = document.getElementById("pdfList");
